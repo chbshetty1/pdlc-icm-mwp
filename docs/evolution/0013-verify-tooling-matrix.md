@@ -51,7 +51,10 @@ Either confirms the tool matrix is accurate as documented (best case, close with
 ## Progress (2026-07-09, in progress — not yet adopted)
 
 - **Fabric: verified on Windows.** `winget install danielmiessler.Fabric` succeeded, but the `fabric` command wasn't recognized in a fresh PowerShell session — winget hadn't registered an App Execution Alias. Found the actual binary at `%LOCALAPPDATA%\Microsoft\WinGet\Packages\danielmiessler.Fabric_Microsoft.Winget.Source_8wekyb3d8bbwe\fabric.exe` and added that folder to the user `PATH` manually. This drift is now documented in `TOOLING_MATRIX.md`'s install column and as a general "Windows winget PATH gotcha" note there, since it likely isn't unique to Fabric.
-- **Repomix, Graphify, DuckDB, Mermaid CLI:** not yet verified — still pending on the user's machine.
-- **Obsidian:** not yet verified.
+- **Repomix: verified.** `npm install -g repomix` worked as documented — no changes needed.
+- **Graphify: verified.** `uv tool install graphifyy` / `pipx install graphifyy` worked as documented — no changes needed.
+- **DuckDB: verified, with a correction.** The documented install ("package manager or standalone binary") was a placeholder; the actual working install is `pip install duckdb`. `TOOLING_MATRIX.md` updated to state this directly.
+- **Mermaid CLI: verified.** `npm install -g @mermaid-js/mermaid-cli` worked as documented — no changes needed.
+- **Obsidian:** not yet verified — vault/junction setup in progress.
 
-Entry stays `proposed` until all six are confirmed (or confirmed-with-fixes) and `TOOLING_MATRIX.md` reflects reality end to end.
+5 of 6 tools confirmed. Entry stays `proposed` until Obsidian is confirmed and `TOOLING_MATRIX.md` reflects reality end to end.

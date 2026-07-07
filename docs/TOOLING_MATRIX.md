@@ -6,10 +6,10 @@ Free/open-source tools mapped to PDLC stages. Verify current install instruction
 |---|---|---|---|---|
 | [Obsidian](https://obsidian.md) | Workspace / knowledge UI | All stages | Human-in-the-loop review surface over the local file tree; point a vault at the workspace root. | Desktop app download |
 | [Fabric](https://github.com/danielmiessler/fabric) | Unstructured text triage | 01_discovery_ideation, 02_definition_metrics | Pattern-based summarization of raw transcripts/notes before they enter context. | **Windows (verified):** `winget install danielmiessler.Fabric`, then run `fabric --setup` once to configure a model/API key. **macOS/Linux:** `brew install fabric-ai` or the install-script one-liner in the repo README. |
-| [Graphify](https://github.com/safishamsi/graphify) | Knowledge graph / AST | 04_architecture_design | Turns code + docs into a queryable graph (`GRAPH_REPORT.md`), flags "god nodes" and structural risk before architecture changes. | PyPI package name is `graphifyy` (double-y); CLI command is `graphify`. `uv tool install graphifyy` or `pipx install graphifyy`, then `graphify install`. |
-| [Repomix](https://repomix.com) | Context bundling | 05_development_test | Packs a repo/folder into a single AI-friendly, token-counted file; supports compression (~70% token reduction). | `npx repomix` or `npm install -g repomix` |
-| [Mermaid CLI](https://github.com/mermaid-js/mermaid-cli) | Diagramming | 04_architecture_design | Renders architecture diagrams directly from markdown text blocks. | `npm install -g @mermaid-js/mermaid-cli` |
-| [DuckDB](https://duckdb.org) | Data aggregation | 06_validation_gtm | Local SQL engine to pre-aggregate telemetry/logs before they ever reach model context. | package manager or standalone binary |
+| [Graphify](https://github.com/safishamsi/graphify) | Knowledge graph / AST | 04_architecture_design | Turns code + docs into a queryable graph (`GRAPH_REPORT.md`), flags "god nodes" and structural risk before architecture changes. | **Verified:** PyPI package name is `graphifyy` (double-y); CLI command is `graphify`. `uv tool install graphifyy` or `pipx install graphifyy`, then `graphify install`. |
+| [Repomix](https://repomix.com) | Context bundling | 05_development_test | Packs a repo/folder into a single AI-friendly, token-counted file; supports compression (~70% token reduction). | **Verified:** `npx repomix` or `npm install -g repomix` |
+| [Mermaid CLI](https://github.com/mermaid-js/mermaid-cli) | Diagramming | 04_architecture_design | Renders architecture diagrams directly from markdown text blocks. | **Verified:** `npm install -g @mermaid-js/mermaid-cli` |
+| [DuckDB](https://duckdb.org) | Data aggregation | 06_validation_gtm | Local SQL engine to pre-aggregate telemetry/logs before they ever reach model context. | **Verified:** `pip install duckdb` (corrected from the original "package manager or standalone binary" placeholder). |
 
 ## Verification note
 
