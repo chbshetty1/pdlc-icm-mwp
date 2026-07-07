@@ -4,6 +4,10 @@ A reusable, standalone framework that applies the **Interpretable Context Method
 
 This repo is the **engine block**, not a product. It contains no live product data. When you start a new product, run `scripts/scaffold.sh` against a *new, separate* product repository — never directly inside this one — to generate that product's active workspace from these templates.
 
+## Prerequisites
+
+`scripts/*.sh` are bash scripts. On Windows, run them from **Git Bash** or **WSL** — plain PowerShell/cmd cannot execute `.sh` files directly. Verified working from Git Bash (`bash scripts/scaffold.sh ...`, `bash scripts/sync.sh ...`, `bash scripts/pivot.sh ...`) — see `docs/evolution/0002-cross-platform-script-verification.md`.
+
 ## What's in here
 
 | Path | Purpose |
@@ -56,7 +60,7 @@ cp .mwp-templates/GLOBAL_CONTEXT.template.md .mwp/GLOBAL_CONTEXT.md
 # edit .mwp/GLOBAL_CONTEXT.md with your real stack, product name, constraints
 
 # 5. Spin up your first feature (always a Core Data Anchor first)
-./scripts/scaffold.sh --feature FEAT-001_core_architecture_and_schema
+bash scripts/scaffold.sh --feature FEAT-001_core_architecture_and_schema
 ```
 
 ## Known gaps this v1 addresses
