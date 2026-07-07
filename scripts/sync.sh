@@ -8,14 +8,15 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 if [ $# -lt 3 ]; then
-  echo "Usage: $0 <workspace_path> <from_stage> <to_stage>"
-  echo "Example: $0 features/FEAT-101_stripe 01_discovery_ideation 02_definition_metrics"
+  echo "Usage: $0 <workspace_path> <from_stage> <to_stage> [approver]"
+  echo "Example: $0 features/FEAT-101_stripe 01_discovery_ideation 02_definition_metrics \"J. Rivera\""
   exit 1
 fi
 
 WORKSPACE=$1
 FROM=$2
 TO=$3
+APPROVER="${4:-unspecified}"
 
 FROM_OUT="$WORKSPACE/$FROM/outputs"
 TO_IN="$WORKSPACE/$TO/inputs"
@@ -88,3 +89,12 @@ fi
 mkdir -p "$TO_IN"
 cp -r "$FROM_OUT"/. "$TO_IN"/
 echo "Synced $FROM_OUT -> $TO_IN"
+
+# --- Sync audit trail (entry 0009) ---
+# Lightweight paper trail, not an auth system: one line per successful sync.
+SYNC_LOG="$WORKSPACE/SYNC_LOG.md"
+if [ ! -f "$SYNC_LOG" ]; then
+  echo "# Sync Log — $(basename "$WORKSPACE")" > "$SYNC_LOG"
+  echo "" >> "$SYNC_LOG"
+fi
+echo "$(date '+%Y-%m-%d %H:%M') — $FROM -> $TO (approved by: $APPROVER)" >> "$SYNC_LOG"

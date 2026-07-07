@@ -15,7 +15,7 @@
 ### Stage 01–02: Claude Chat/Desktop
 1. Human: `./scripts/scaffold.sh --feature FEAT-xxx_name`. Drop raw notes into `01_discovery_ideation/inputs/`.
 2. Open a clean Claude Chat. Paste `.mwp/IDENTITY.md` + `01_discovery_ideation/CONTEXT.md` + the raw inputs.
-3. Review `Riskiest_Assumption.md` in Obsidian. Run `./scripts/sync.sh <feature_path> 01_discovery_ideation 02_definition_metrics` once approved, repeat for stage 02's output into stage 03.
+3. Review `Riskiest_Assumption.md` in Obsidian. Run `./scripts/sync.sh <feature_path> 01_discovery_ideation 02_definition_metrics [approver]` once approved, repeat for stage 02's output into stage 03. The optional `[approver]` argument (a name, initials, or omitted) is appended to `<feature_path>/SYNC_LOG.md` along with a timestamp — a lightweight paper trail, not an auth system. See `docs/evolution/0009-sync-audit-trail.md`.
 
 ### Stage 03–04: Claude Cowork / Project Spaces
 1. Human: confirm `sync.sh` has moved approved 02 outputs into `03_requirements_specs/inputs/`.
