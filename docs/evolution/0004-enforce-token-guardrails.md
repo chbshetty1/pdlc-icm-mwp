@@ -3,6 +3,7 @@
 - **Date:** 2026-07-08
 - **Status:** proposed
 - **Priority:** 3 of 5 — closes a real gap between stated discipline and actual behavior, but lower urgency than 0002/0003.
+- **Status:** adopted (2026-07-07)
 
 ## Problem
 
@@ -23,3 +24,17 @@ Add a lightweight check in `sync.sh` (the natural checkpoint, since it already r
 ## What happens if adopted
 
 Token discipline becomes something the tooling actually verifies, closing the gap between what the framework claims (up to 60% token reduction per the original design brainstorm) and what it currently measures (nothing).
+
+## Outcome (2026-07-07)
+
+All 5 steps implemented as written:
+
+1. Heuristic confirmed: `word_count × 1.3`, computed via `wc -w` and `awk`, no tokenizer dependency.
+2. `check_token_guardrail()` added to `sync.sh`: reads `$WORKSPACE/$FROM/CONTEXT.md`, extracts the first `Max N tokens` match via `grep -oE`, and checks every file in `$FROM_OUT` except `BLOCKED_REASON.md` against it.
+3. Warn-only confirmed — the function never exits non-zero; it only prints to stderr. The sync proceeds regardless.
+4. Tested in a sandbox: a small in-bounds file produced no warning; a deliberately oversized file (~2600 estimated tokens against a 1500 ceiling) produced the warning and the sync still completed and copied the file forward.
+5. Documented in `CLAUDE.md`'s "Automated skill routing" section.
+
+**One simplification worth recording**, found while reading the actual stage `CONTEXT.md` wording during implementation: the guardrail phrasing isn't uniform across stages — stage 03 says "Max 2500 tokens *total output for this stage*" (a per-stage budget) and stage 06 says "Max 1500 tokens *for `Validation_Report.md`*" (scoped to one named file), while 01/02/04 say "Max N tokens *per output file*" (a per-file ceiling). The mechanical check doesn't distinguish these — it applies whatever number it finds to every file in that stage's `outputs/` individually, which is stricter than stage 03's wording (a per-stage total) and looser than stage 06's (only one file is actually meant to be checked, but the check applies the number to every file in that stage). This is an acceptable heuristic tradeoff per the entry's own framing ("close enough for a guardrail, not a precise budget"), but worth knowing if the warnings ever look surprising. Also confirmed: stage 05 has no numeric ceiling at all in its `CONTEXT.md` (a `repomix`-bundling threshold instead) — the check correctly finds nothing to compare against and stays silent, even against a deliberately huge test file.
+
+Per the versioning workflow from entry `0015`: no `.mwp-templates/` file touched (the ceiling wording itself wasn't changed), so no `template-version` bump applies — root `VERSION` bumped from `7` to `8` since `scripts/sync.sh` and `CLAUDE.md` both ship to products.

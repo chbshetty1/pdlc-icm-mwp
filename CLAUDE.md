@@ -19,6 +19,8 @@ Before invoking any tool below, check it's actually installed (`command -v <tool
 - **05_development_test:** run `repomix` to bundle source before large contextual queries. Use `duckdb` for local data aggregation rather than ingesting raw CSV/SQL dumps.
 - **06_validation_gtm:** summarize telemetry with `duckdb` before writing `Validation_Report.md`. Never paste raw logs into context.
 
+Every stage's declared token ceiling ("Max N tokens per output file" in that stage's `CONTEXT.md`) is checked mechanically, not just stated: `sync.sh` estimates each output file's token count (`word_count × 1.3` — a guardrail heuristic, not a real tokenizer) and prints a warning if it's over. This never blocks the sync — treat the warning as a signal to trim the output before the next stage builds on it, not a hard failure. See `docs/evolution/0004-enforce-token-guardrails.md`.
+
 ## Failure handling
 
 If a stage's validation or test step fails twice consecutively, stop. Write `BLOCKED_REASON.md` in the active stage's `outputs/` describing the failure per `.mwp-templates/CRITICAL_ESCALATION.md`, and end the session. Do not retry a third time unattended.

@@ -31,6 +31,32 @@ if [ -f "$FROM_OUT/BLOCKED_REASON.md" ]; then
   exit 1
 fi
 
+# --- Token guardrail check (entry 0004) ---
+# Heuristic estimate (word_count * 1.3), not a real tokenizer -- close enough
+# for a guardrail, not a precise budget. Warns only, never blocks the sync.
+# See docs/evolution/0004-enforce-token-guardrails.md.
+check_token_guardrail() {
+  local context_file="$WORKSPACE/$FROM/CONTEXT.md"
+  [ -f "$context_file" ] || return 0
+
+  local ceiling
+  ceiling="$(grep -oE 'Max [0-9]+ tokens' "$context_file" | head -1 | grep -oE '[0-9]+' || true)"
+  [ -z "$ceiling" ] && return 0
+
+  local f words est
+  for f in "$FROM_OUT"/*; do
+    [ -f "$f" ] || continue
+    [ "$(basename "$f")" = "BLOCKED_REASON.md" ] && continue
+    words="$(wc -w < "$f" 2>/dev/null | tr -d ' ')"
+    [ -z "$words" ] && continue
+    est=$(awk -v w="$words" 'BEGIN { printf "%d", w * 1.3 }')
+    if [ "$est" -gt "$ceiling" ]; then
+      echo "Warning: $(basename "$f") is ~$est estimated tokens (word-count heuristic), over $FROM's declared ceiling of $ceiling. Sync continues — see docs/evolution/0004-enforce-token-guardrails.md." >&2
+    fi
+  done
+}
+check_token_guardrail
+
 # --- Shared-path collision check (entry 0005) ---
 # Only meaningful at the 04->05 and 05->06 transitions, where a feature's
 # architecture/code output could touch something declared shared in
