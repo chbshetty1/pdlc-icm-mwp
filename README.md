@@ -10,12 +10,14 @@ This repo is the **engine block**, not a product. It contains no live product da
 |---|---|
 | `.mwp-templates/` | Blueprint files copied into every new product workspace: global identity, stage contracts (6 PDLC stages), escalation and priority-registry templates. |
 | `scripts/` | Automation: `scaffold.sh` (spin up a new feature/sprint workspace), `sync.sh` (advance approved outputs to the next stage), `pivot.sh` (Lean kill-switch), `compact.sh` (context compaction). |
-| `docs/` | `CLAUDE_WORKFLOW_PLAYBOOK.md` (optional — which Claude surface to use per stage, if you're using Claude), `PRIORITIZATION_GUIDE.md` (C-V-R scoring), `TOOLING_MATRIX.md` (free/open-source tool stack). |
+| `docs/CLAUDE_WORKFLOW_PLAYBOOK.md` | Optional — which Claude surface to use per stage, if you're using Claude. **Travels with new products.** |
+| `docs/PRIORITIZATION_GUIDE.md` | C-V-R scoring for product features. **Travels with new products.** |
+| `docs/TOOLING_MATRIX.md` | Free/open-source tool stack. **Travels with new products.** |
+| `docs/FAQ.md` | Answers to recurring meta-questions (is Claude required, can the framework develop itself, is that a PDLC, git/repo operational lessons). **Travels with new products.** |
 | `hooks/post-commit` | Sample git hook a product repo can adopt to auto-refresh Graphify/Repomix on relevant commits. |
 | `CLAUDE.md` | Root automation-routing rules Claude Code reads when working inside a product workspace built from this template. |
-| `PROJECT_PLAN.md` | Planning history — how this framework's design decisions were made. |
-| `docs/evolution/` | Append-only log of design analyses, critiques, and changes over time — see `EVOLUTION_LOG.md` for the index and the convention for adding new entries. |
-| `docs/FAQ.md` | Answers to recurring meta-questions (is Claude required, can the framework develop itself, is that a PDLC, how `docs/evolution/` relates to the 6-stage pipeline). |
+| `PROJECT_PLAN.md` | Planning history — how this framework's design decisions were made. **Framework-repo only, does not travel.** |
+| `docs/evolution/` | Append-only log of this framework template's own design analyses, critiques, and changes — see `EVOLUTION_LOG.md` for the convention. **Framework-repo only, does not travel** (the convention is reusable for your own product if you want it — the specific entries aren't). |
 
 ## Core design
 
@@ -37,11 +39,23 @@ cp -r ../"PDLC - ICM-MWP"/.mwp-templates ./.mwp-templates
 cp -r ../"PDLC - ICM-MWP"/scripts ./scripts
 cp ../"PDLC - ICM-MWP"/CLAUDE.md ./CLAUDE.md
 
-# 3. Write your product's global context
+# 3. Copy the reference docs a product team actually needs day-to-day
+mkdir -p ./docs
+cp ../"PDLC - ICM-MWP"/docs/FAQ.md ./docs/
+cp ../"PDLC - ICM-MWP"/docs/CLAUDE_WORKFLOW_PLAYBOOK.md ./docs/
+cp ../"PDLC - ICM-MWP"/docs/PRIORITIZATION_GUIDE.md ./docs/
+cp ../"PDLC - ICM-MWP"/docs/TOOLING_MATRIX.md ./docs/
+# note: docs/evolution/ and PROJECT_PLAN.md stay behind — they're about this
+# framework template's own design history, not your product's. If you want to
+# track your own product/architecture decisions the same way, start a fresh
+# docs/evolution/ in your new repo — the convention travels even though the
+# specific entries shouldn't.
+
+# 4. Write your product's global context
 cp .mwp-templates/GLOBAL_CONTEXT.template.md .mwp/GLOBAL_CONTEXT.md
 # edit .mwp/GLOBAL_CONTEXT.md with your real stack, product name, constraints
 
-# 4. Spin up your first feature (always a Core Data Anchor first)
+# 5. Spin up your first feature (always a Core Data Anchor first)
 ./scripts/scaffold.sh --feature FEAT-001_core_architecture_and_schema
 ```
 

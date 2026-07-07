@@ -52,6 +52,16 @@ git push --force-with-lease --set-upstream origin main
 
 `--force-with-lease` is safer than plain `--force` — it double-checks the remote hasn't changed unexpectedly since your last fetch before overwriting anything.
 
+## Which docs travel with a new product built from this framework, and which stay behind?
+
+**Travels:** `docs/FAQ.md`, `docs/CLAUDE_WORKFLOW_PLAYBOOK.md`, `docs/PRIORITIZATION_GUIDE.md`, `docs/TOOLING_MATRIX.md` — these are reference material a product team actually needs day-to-day, regardless of which product they're building. The README's "Using this framework for a new product" copy commands include them.
+
+**Stays behind:** `docs/evolution/` and `PROJECT_PLAN.md` — these are about *this framework template's own* design history (why it has 6 stages, why C-V-R has a bypass rule, why the scripts are shaped the way they are). None of that is about your product. If you want to track your own product's architecture decisions the same append-only way, start a fresh `docs/evolution/` in your new repo — copy the convention (see `EVOLUTION_LOG.md`'s "How to use this" section), not the specific entries.
+
+## Can VS Code (or Claude Code CLI) automatically capture FAQ-worthy conversations into this file?
+
+Yes, going forward — `CLAUDE.md`'s root instructions now tell Claude Code (CLI or the VS Code extension, both read the file the same way) to proactively append reusable Q&A to this file whenever a conversation in this repo resolves one, without waiting to be asked. This only fires while Claude Code is actually working inside this repo (or a product repo copied from it) — it doesn't reach into Claude Chat conversations or retroactively pull in past sessions. Anything from before this instruction existed, or from a different surface (Chat, a different project), still needs to be pasted in manually.
+
 ## How should I name and describe a repo built from this framework?
 
 Lowercase, hyphenated (`your-product-name`, not `YourProductName`) — GitHub URLs are case-insensitive anyway, and it matches the near-universal convention plus any tooling that assumes lowercase paths. For the repo's top-line description, keep it agent-agnostic even if you use Claude day-to-day — the core folder/`CONTEXT.md` mechanism works with any LLM agent, and naming one product in the front-door pitch narrows your audience and can read like an implied endorsement you don't have. Save Claude-specific detail for `docs/CLAUDE_WORKFLOW_PLAYBOOK.md`, where it's accurately scoped to where it actually applies.
