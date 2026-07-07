@@ -43,4 +43,4 @@ Micro-PDLC isolates features, but two features can still need the same shared sc
 
 ## Why this stays token-efficient
 
-Each
+Each Claude session only ever sees: the active stage's `CONTEXT.md`, its declared `inputs/`, and explicitly whitelisted upstream files. Switching which folder you `cd` into (Code CLI) or which files you attach (Cowork) is what "changes context" — not a growing conversation history.
