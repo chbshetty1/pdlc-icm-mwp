@@ -1,8 +1,12 @@
 # 0002 — Verify Cross-Platform Script Execution
 
 - **Date:** 2026-07-08
-- **Status:** proposed
+- **Status:** adopted (2026-07-09)
 - **Priority:** 1 of 5 — highest, because it's a potential live blocker rather than a design improvement.
+
+## Outcome
+
+Verified from Git Bash on the actual Windows machine this framework is used on: `scaffold.sh` created the feature tree with correct `CONTEXT.md` substitution, `sync.sh` correctly moved `outputs/` into the next stage's `inputs/`, and `pivot.sh` correctly archived to `.archive/failed_hypotheses/` and removed the feature folder. No portability fixes needed — best-case outcome from the plan's step 4. `README.md` updated with the one-line prerequisite.
 
 ## Problem
 
