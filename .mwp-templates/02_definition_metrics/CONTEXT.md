@@ -20,6 +20,7 @@ Define the single metric that validates or invalidates the riskiest assumption f
 
 - `./outputs/OKR_Framework.md` — objective + key result(s) for this feature.
 - `./outputs/Core_Metrics_KPIs.md` — the primary metric, target, and measurement method.
+- `./outputs/Context_Manifest.md` — every file this stage actually read (paths only), self-reported, for human cross-check against this contract's declared READ ONLY scope (see `CRITICAL_ESCALATION.md`).
 
 ## 5. Token guardrails
 
@@ -29,4 +30,4 @@ Define the single metric that validates or invalidates the riskiest assumption f
 
 Two failed attempts to define a measurable target → write `BLOCKED_REASON.md` per `../../.mwp-templates/CRITICAL_ESCALATION.md`.
 
-<!-- template-version: 1 -->
+<!-- template-version: 2 -->

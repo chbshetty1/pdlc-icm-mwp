@@ -1,7 +1,7 @@
 # 0018 — Verify Scope/Directory Containment (the Unenforced Foundational Constraint)
 
 - **Date:** 2026-07-09
-- **Status:** proposed
+- **Status:** adopted (2026-07-07)
 - **Priority:** high — more foundational than 0004 (token guardrails) or 0005 (shared-schema collisions), since the whole methodology rests on this one holding true, yet it has zero verification.
 
 ## Problem
@@ -27,3 +27,15 @@ A heavier, fully mechanical option (actual file-access tracing, e.g. wrapping ex
 ## What happens if adopted
 
 Turns the framework's most important constraint from "the agent is asked to comply" into "the agent is asked to comply, and a human can actually check" — closing the gap between the claimed design guarantee and what's currently verifiable, at low implementation cost, while being honest that it's not a hard technical guarantee.
+
+## Outcome (2026-07-07)
+
+Steps 1, 2, 4, 5 implemented as written. Step 3 adapted:
+
+1. `Context_Manifest.md` added as a required deliverable to all six stage `CONTEXT.md` templates.
+2. A "Context Manifest cross-check" section added to `CRITICAL_ESCALATION.md`: human cross-checks the manifest against declared `READ ONLY` scope at the same Obsidian gate as everything else; extras are a flag, not an automatic block.
+3. **Adapted** — `docs/CONSTRAINTS.md` doesn't exist yet (that's entry `0017`, still `proposed`, ranked below this one at 13 vs. 4 — a real ordering/dependency mismatch, not an oversight). The self-reported-not-enforced disclosure was written into `CRITICAL_ESCALATION.md` instead, as an interim home, with an explicit note there to move it into `docs/CONSTRAINTS.md` once 0017 lands.
+4. Tested in a sandbox: scaffolded a throwaway feature, wrote a stage 01 `Context_Manifest.md` that deliberately included a read outside stage 01's declared scope (`../02_definition_metrics/CONTEXT.md`, not covered by stage 01's `READ ONLY` list). Cross-checking the manifest against the declared scope correctly surfaced that entry as out-of-scope. Confirms the mechanism does what it's meant to: make an out-of-scope read visible on review, not prevent it.
+5. No file-access-tracing infrastructure built — as planned, only a future escalation if self-reporting proves insufficient.
+
+Per the versioning workflow from entry `0015`: all six stage `CONTEXT.md` files and `CRITICAL_ESCALATION.md` bumped from `template-version: 1` to `template-version: 2`; root `VERSION` bumped from `1` to `2`.

@@ -19,6 +19,7 @@ Synthesize raw, unstructured input (interviews, notes, market data) into a singl
 
 - `./outputs/Riskiest_Assumption.md` — the assumption, why it's risky, and what evidence would confirm/deny it.
 - `./outputs/Problem_Statement.md` — 3-5 sentences max.
+- `./outputs/Context_Manifest.md` — every file this stage actually read (paths only), self-reported, for human cross-check against this contract's declared READ ONLY scope (see `CRITICAL_ESCALATION.md`).
 
 ## 5. Token guardrails
 
@@ -29,4 +30,4 @@ Synthesize raw, unstructured input (interviews, notes, market data) into a singl
 
 If two consecutive attempts fail to produce a falsifiable assumption, write `./outputs/BLOCKED_REASON.md` per `../../.mwp-templates/CRITICAL_ESCALATION.md` and stop.
 
-<!-- template-version: 1 -->
+<!-- template-version: 2 -->

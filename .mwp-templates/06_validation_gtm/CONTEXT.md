@@ -19,6 +19,7 @@ Determine Pivot or Persevere against the metric defined in stage 02, using aggre
 
 - `./outputs/Validation_Report.md` — result vs. target, and an explicit Pivot/Persevere recommendation.
 - `./outputs/Product_Launch_Kit.md` (only if Persevere)
+- `./outputs/Context_Manifest.md` — every file this stage actually read (paths only), self-reported, for human cross-check against this contract's declared READ ONLY scope (see `CRITICAL_ESCALATION.md`).
 
 ## 5. Token guardrails
 
@@ -28,4 +29,4 @@ Determine Pivot or Persevere against the metric defined in stage 02, using aggre
 
 If the recommendation is Pivot, run `../../scripts/pivot.sh {{FEATURE_NAME}} --pivot` to archive learnings and purge the feature's dead code/specs. Do not leave a pivoted feature's stale files in the active `features/` tree.
 
-<!-- template-version: 1 -->
+<!-- template-version: 2 -->

@@ -21,6 +21,7 @@ Convert the locked objective and metric into minimal, testable engineering speci
 
 - `./outputs/BDD_Gherkin_Specs.md`
 - `./outputs/Spec_DD_Use_Cases.md`
+- `./outputs/Context_Manifest.md` — every file this stage actually read (paths only), self-reported, for human cross-check against this contract's declared READ ONLY scope (see `CRITICAL_ESCALATION.md`).
 
 ## 5. Token guardrails
 
@@ -30,4 +31,4 @@ Convert the locked objective and metric into minimal, testable engineering speci
 
 If a spec can't be made to map to a defined metric after two attempts, write `BLOCKED_REASON.md` per `../../.mwp-templates/CRITICAL_ESCALATION.md`.
 
-<!-- template-version: 1 -->
+<!-- template-version: 2 -->
