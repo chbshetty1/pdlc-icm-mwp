@@ -9,3 +9,7 @@ graphify-out/
 node_modules/
 __pycache__/
 *.pyc
+
+# Personal Obsidian vault config if this folder is opened as (or contains) a vault —
+# plugin settings and workspace layout are local preference, not shared framework state.
+.obsidian/
