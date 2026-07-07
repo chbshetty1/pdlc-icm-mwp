@@ -15,7 +15,7 @@ The optional per-stage tools (Fabric, Graphify, Repomix, Mermaid CLI, DuckDB, Ob
 | Path | Purpose |
 |---|---|
 | `.mwp-templates/` | Blueprint files copied into every new product workspace: global identity, stage contracts (6 PDLC stages), escalation and priority-registry templates. |
-| `scripts/` | Automation: `scaffold.sh` (spin up a new feature/sprint workspace), `sync.sh` (advance approved outputs to the next stage), `pivot.sh` (Lean kill-switch), `compact.sh` (context compaction). |
+| `scripts/` | Automation: `scaffold.sh` (spin up a new feature/sprint workspace), `sync.sh` (advance approved outputs to the next stage), `pivot.sh` (Lean kill-switch), `compact.sh` (context compaction), `doctor.sh` (check, and optionally install, the tool stack in `docs/TOOLING_MATRIX.md`). |
 | `docs/CLAUDE_WORKFLOW_PLAYBOOK.md` | Optional — which Claude surface to use per stage, if you're using Claude. **Travels with new products.** |
 | `docs/PRIORITIZATION_GUIDE.md` | C-V-R scoring for product features. **Travels with new products.** |
 | `docs/TOOLING_MATRIX.md` | Free/open-source tool stack. **Travels with new products.** |

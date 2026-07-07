@@ -1,7 +1,7 @@
 # 0013 — Verify the Tooling Matrix Actually Works
 
 - **Date:** 2026-07-09
-- **Status:** proposed
+- **Status:** adopted (2026-07-07)
 - **Priority:** high — same class of gap as 0002 (infrastructure assumed but never verified), applied to the external tool stack instead of the bash scripts.
 
 ## Problem
@@ -55,6 +55,16 @@ Either confirms the tool matrix is accurate as documented (best case, close with
 - **Graphify: verified.** `uv tool install graphifyy` / `pipx install graphifyy` worked as documented — no changes needed.
 - **DuckDB: verified, with a correction.** The documented install ("package manager or standalone binary") was a placeholder; the actual working install is `pip install duckdb`. `TOOLING_MATRIX.md` updated to state this directly.
 - **Mermaid CLI: verified.** `npm install -g @mermaid-js/mermaid-cli` worked as documented — no changes needed.
-- **Obsidian:** not yet verified — vault/junction setup in progress.
+- **Obsidian: verified.** Desktop app installed; vault set up via a directory junction linking this workspace into a separate primary vault. Indexes and renders the linked folder's contents normally (Mermaid code blocks render natively, no plugin needed). `TOOLING_MATRIX.md` updated with both the direct-vault and junction options.
 
-5 of 6 tools confirmed. Entry stays `proposed` until Obsidian is confirmed and `TOOLING_MATRIX.md` reflects reality end to end.
+All 6 of 6 tools confirmed (steps 1–7 of the plan above).
+
+## Outcome (2026-07-07)
+
+Steps 8–10 complete:
+
+- **`scripts/doctor.sh` written and tested** (in a sandbox, since installing the actual tools requires the user's machine — same constraint noted in the Correction above). Default mode scans all five CLI tools (Obsidian is flagged `[manual]` — a GUI app, not checkable via `command -v`) and reports `[ok]`/`[missing]` per tool, exiting non-zero if anything's missing. Verified both branches: with no tools present, correctly listed all five as missing with their install commands and exited 1; with fake stand-in binaries on `PATH`, correctly reported all `[ok]` and exited 0.
+- **`--install-missing` implemented as a deliberately narrower opt-in than originally scoped.** Only Repomix, Mermaid CLI, and DuckDB auto-install (single, non-interactive package-manager commands). Fabric and Graphify always print their install command instead of running it — both need an OS-specific choice or an interactive follow-up step (`fabric --setup`, `graphify install`) that shouldn't fire unattended. Verified in sandbox: the three auto-installable commands ran (network-blocked in-sandbox, as expected — see Correction above — but the script degraded correctly, printing a per-tool failure note and finishing with instructions to re-run and confirm, rather than crashing).
+- **Lazy per-stage check wired into `CLAUDE.md`'s "Automated skill routing" section**: before invoking any tool, check `command -v`; on failure, write `BLOCKED_REASON.md` per `CRITICAL_ESCALATION.md` instead of attempting the run. `doctor.sh` also referenced in `CLAUDE.md`'s "Direct commands" and in `README.md`'s `scripts/` row.
+
+No portability fixes needed beyond the narrowed auto-install scope above. `TOOLING_MATRIX.md` reflects reality end to end (all 6 tools, including Obsidian, marked verified with corrected install commands where they'd drifted).

@@ -12,6 +12,8 @@ This workspace operates under the Interpretable Context Methodology (ICM). Respe
 
 ## Automated skill routing
 
+Before invoking any tool below, check it's actually installed (`command -v <tool>`). If missing, don't attempt the run — write `BLOCKED_REASON.md` in the active stage's `outputs/` per `.mwp-templates/CRITICAL_ESCALATION.md`, putting the install command from `docs/TOOLING_MATRIX.md` under "What a human needs to decide." Fail this way, not with a bare "command not found" mid-task. A human can also run `scripts/doctor.sh` anytime to scan the whole tool stack at once, or `scripts/doctor.sh --install-missing` to install what it safely can — never automatic, always opt-in. See `docs/evolution/0013-verify-tooling-matrix.md`.
+
 - **01_discovery_ideation / 02_definition_metrics:** pipe unstructured input (transcripts, notes) through `fabric` patterns before writing output markdown. Keep outputs to a single riskiest-assumption framing, not a full research report.
 - **04_architecture_design:** before proposing structural changes, run `graphify .` and read `graphify-out/GRAPH_REPORT.md`. Use Mermaid syntax for any diagram committed to markdown.
 - **05_development_test:** run `repomix` to bundle source before large contextual queries. Use `duckdb` for local data aggregation rather than ingesting raw CSV/SQL dumps.
@@ -34,3 +36,4 @@ This applies whether you're running as Claude Code CLI or the VS Code extension 
 - Advance approved outputs to next stage: `./scripts/sync.sh <feature_path> <from_stage> <to_stage>`
 - Compact a growing feature: `./scripts/compact.sh <feature_path>`
 - Kill a failed hypothesis: `./scripts/pivot.sh <feature_name> --pivot`
+- Check the tool stack: `./scripts/doctor.sh` (add `--install-missing` to install what it can)
