@@ -21,3 +21,9 @@ A small, standalone PowerShell script (`scripts/preflight.ps1`) that can be run 
 ## What happens if adopted
 
 Closes the one prerequisite gap that can't be caught by `doctor.sh` itself, since `doctor.sh` requires the very thing being checked for. Cheap, and prevents a confusing raw shell error for anyone new to this framework on Windows.
+
+## Progress (2026-07-07, in progress — not yet adopted)
+
+Steps 1–2 done: `scripts/preflight.ps1` written (`Get-Command bash -ErrorAction SilentlyContinue`; prints a green `[ok]` with the resolved path if found, or red `[missing]` plus both install options — Git for Windows via `winget install --id Git.Git -e --source winget` or `wsl --install` — and exits non-zero if not). `README.md`'s Prerequisites section updated to point to it as an optional first check.
+
+**Step 3 (testing) could not be done in this environment.** This session's sandbox has no PowerShell available at all (`pwsh` isn't installed), unlike entries 0003/0005/0009 where a bash sandbox was usable for real testing — there's no equivalent fallback here. This is the same class of limitation as entry 0002: the thing being verified (correct behavior against Windows' real PATH and installed tools) only means something on the actual machine. Entry stays `proposed` until both branches are confirmed there.

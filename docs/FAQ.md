@@ -43,6 +43,10 @@ A related but distinct issue from the git corruption above, discovered while tes
 
 The workaround that worked: write the file's exact current contents directly into the sandbox's own scratch space (not copied through the live mount) and test from there. If a test result from Claude's sandbox looks wrong immediately after an edit — truncated output, a script behaving like an older version — this mount staleness is worth suspecting before assuming the code itself is broken. See `docs/evolution/0003-computed-priority-registry.md`'s Outcome section.
 
+## Why couldn't Claude test `scripts/preflight.ps1` itself, the way it tested the bash scripts?
+
+Claude's sandbox is Linux, with no PowerShell installed at all (confirmed: `pwsh` isn't available) — unlike the bash scripts, where the sandbox is at least a partial stand-in even though real verification still happens on the actual machine per entry `0002`. For a `.ps1` file there's no fallback: it can only be written, never run, inside this environment. Any PowerShell-only tooling this framework adds (entry `0023` is the first) will always need its actual testing done on a real Windows machine, with Claude only able to review the script by reading it and reasoning about correctness, not executing it. Worth knowing before assuming "Claude tested it" means the same thing for every kind of script in this repo.
+
 ## My first `git push` to a freshly created GitHub repo was rejected as "non-fast-forward" — why?
 
 GitHub can add an initial commit (e.g. a license file) even when you think every "initialize this repository" checkbox was left unchecked — this happened during this framework's own setup. Check what's actually on the remote before assuming a real conflict:

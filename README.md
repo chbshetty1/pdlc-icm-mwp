@@ -8,6 +8,8 @@ This repo is the **engine block**, not a product. It contains no live product da
 
 `scripts/*.sh` are bash scripts. On Windows, run them from **Git Bash** or **WSL** — plain PowerShell/cmd cannot execute `.sh` files directly. Verified working from Git Bash (`bash scripts/scaffold.sh ...`, `bash scripts/sync.sh ...`, `bash scripts/pivot.sh ...`) — see `docs/evolution/0002-cross-platform-script-verification.md`.
 
+On Windows, if you're not sure whether Git Bash or WSL is even installed, run `.\scripts\preflight.ps1` from plain PowerShell first — it checks for `bash` on PATH and prints install guidance if it's missing, instead of you hitting a raw "command not found" the first time you try a `scripts/*.sh` file. Detection only, doesn't install anything for you. See `docs/evolution/0023-powershell-bash-preflight-check.md`.
+
 The optional per-stage tools (Fabric, Graphify, Repomix, Mermaid CLI, DuckDB, Obsidian) are a separate set of prerequisites with their own install steps — see `docs/TOOLING_MATRIX.md` (includes a Windows `winget` PATH gotcha found while verifying this). Verification status: `docs/evolution/0013-verify-tooling-matrix.md`.
 
 ## What's in here
