@@ -51,9 +51,16 @@ done
 mkdir -p "$TARGET_DIR/05_development_test/src" "$TARGET_DIR/05_development_test/tests"
 mkdir -p "$TARGET_DIR/06_validation_gtm/validation_data" "$TARGET_DIR/06_validation_gtm/design_artifacts"
 
+if [ -f "$TEMPLATES_DIR/FEATURE_META.template.md" ]; then
+  sed "s/{{FEATURE_NAME}}/$NAME/g" "$TEMPLATES_DIR/FEATURE_META.template.md" > "$TARGET_DIR/FEATURE_META.md"
+else
+  echo "Warning: no FEATURE_META.template.md found at $TEMPLATES_DIR — skipping." >&2
+fi
+
 echo "Done."
 echo "Next steps:"
 echo "  1. Drop raw discovery material into $TARGET_DIR/${STAGES[0]}/inputs/"
-echo "  2. If this is a foundational feature, list it under 'Core Data Anchors' in .mwp/FEATURE_PRIORITY_REGISTRY.md"
-echo "     Otherwise, score it (C-V-R) and add it to the Active Execution Queue there."
-echo "  3. Open Claude Chat/Desktop and start stage 01."
+echo "  2. Fill in $TARGET_DIR/FEATURE_META.md — set is_core_anchor: true for Phase 0 foundational work,"
+echo "     otherwise score it (C-V-R) per docs/PRIORITIZATION_GUIDE.md. Never hand-edit the registry directly."
+echo "  3. Run ./scripts/registry.sh to regenerate .mwp/FEATURE_PRIORITY_REGISTRY.md from all features' metadata."
+echo "  4. Open Claude Chat/Desktop and start stage 01."

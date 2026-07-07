@@ -35,6 +35,14 @@ Be cautious about this, especially since Claude Code CLI is one of the three sur
 
 The safe pattern that worked: do git operations (`init`, `add`, `commit`, `push`) from your own terminal, on your own machine, using your own git installation. If an agent needs to prepare a repo on your behalf, it should build it in an isolated scratch location first and copy only the *finished* `.git` directory over as a whole-file copy — never run git commands incrementally against a live, synced working folder.
 
+**So can Claude just add/commit/push for you directly, going forward?** Technically it could attempt to, but given the corruption incident above, the established pattern for this repo is: Claude edits files and hands you the exact `git add`/`commit`/`push` commands to run yourself, every time — never runs git against this live working folder on your behalf. This isn't a hard technical limitation, it's a deliberate policy adopted after a real incident, and it's held for every adoption in this evolution log so far.
+
+## I just watched Claude edit a script, then test it in its sandbox and get stale/truncated results — what happened?
+
+A related but distinct issue from the git corruption above, discovered while testing entry `0003`'s `scaffold.sh` change: after editing the file, copying it (`cp`) from the live mounted repo path into the sandbox served a version missing the last few lines, even though the actual file on disk was already correct and complete — confirmed by reading it back directly. Re-copying didn't fix it either; the mount stayed stale for the rest of that session. This is a read-side staleness issue (a plain file read returning old content), not the write-side corruption the git entry above describes, but it's the same underlying caution: don't fully trust the sandbox-to-Windows mount mid-session for anything you're about to rely on.
+
+The workaround that worked: write the file's exact current contents directly into the sandbox's own scratch space (not copied through the live mount) and test from there. If a test result from Claude's sandbox looks wrong immediately after an edit — truncated output, a script behaving like an older version — this mount staleness is worth suspecting before assuming the code itself is broken. See `docs/evolution/0003-computed-priority-registry.md`'s Outcome section.
+
 ## My first `git push` to a freshly created GitHub repo was rejected as "non-fast-forward" — why?
 
 GitHub can add an initial commit (e.g. a license file) even when you think every "initialize this repository" checkbox was left unchecked — this happened during this framework's own setup. Check what's actually on the remote before assuming a real conflict:
