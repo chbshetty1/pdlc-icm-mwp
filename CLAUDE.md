@@ -33,7 +33,9 @@ This applies whether you're running as Claude Code CLI or the VS Code extension 
 
 - Re-index knowledge graph: `graphify .`
 - Compress code context: `repomix`
-- Advance approved outputs to next stage: `./scripts/sync.sh <feature_path> <from_stage> <to_stage>`
+- Advance approved outputs to next stage: `./scripts/sync.sh <feature_path> <from_stage> <to_stage> [approver]`
 - Compact a growing feature: `./scripts/compact.sh <feature_path>`
 - Kill a failed hypothesis: `./scripts/pivot.sh <feature_name> --pivot`
 - Check the tool stack: `./scripts/doctor.sh` (add `--install-missing` to install what it can)
+- Check what's blocked or in-progress across all active features: `./scripts/status.sh` (on-demand only, no alerting)
+- Regenerate the priority registry: `./scripts/registry.sh`

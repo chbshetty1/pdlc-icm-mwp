@@ -10,6 +10,9 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 FEATURES_DIR="$ROOT_DIR/features"
 OUT_FILE="$ROOT_DIR/.mwp/FEATURE_PRIORITY_REGISTRY.md"
 
+# shellcheck source=lib/scan_features.sh
+source "$SCRIPT_DIR/lib/scan_features.sh"
+
 get_field() {
   grep -E "^${2}:" "$1" 2>/dev/null | head -1 | sed -E "s/^${2}:[[:space:]]*//"
 }
@@ -21,40 +24,38 @@ ACTIVE_ROWS=()
 DEEP_ROWS=()
 UNSCORED_ROWS=()
 
-if [ -d "$FEATURES_DIR" ]; then
-  for meta in "$FEATURES_DIR"/*/FEATURE_META.md; do
-    [ -f "$meta" ] || continue
-    FEATURE_DIR="$(dirname "$meta")"
-    REL_PATH="./features/$(basename "$FEATURE_DIR")"
+while IFS= read -r FEATURE_DIR; do
+  meta="$FEATURE_DIR/FEATURE_META.md"
+  [ -f "$meta" ] || continue
+  REL_PATH="./features/$(basename "$FEATURE_DIR")"
 
-    FID=$(get_field "$meta" "feature_id"); [ -z "$FID" ] && FID="$(basename "$FEATURE_DIR")"
-    NAME=$(get_field "$meta" "name")
-    C=$(get_field "$meta" "c")
-    V=$(get_field "$meta" "v")
-    R=$(get_field "$meta" "r")
-    STATUS=$(get_field "$meta" "status"); [ -z "$STATUS" ] && STATUS="not started"
-    ANCHOR=$(get_field "$meta" "is_core_anchor")
+  FID=$(get_field "$meta" "feature_id"); [ -z "$FID" ] && FID="$(basename "$FEATURE_DIR")"
+  NAME=$(get_field "$meta" "name")
+  C=$(get_field "$meta" "c")
+  V=$(get_field "$meta" "v")
+  R=$(get_field "$meta" "r")
+  STATUS=$(get_field "$meta" "status"); [ -z "$STATUS" ] && STATUS="not started"
+  ANCHOR=$(get_field "$meta" "is_core_anchor")
 
-    if [ "$ANCHOR" = "true" ]; then
-      ANCHOR_ROWS+=("| $FID | $NAME | $STATUS | \`$REL_PATH\` |")
-      continue
-    fi
+  if [ "$ANCHOR" = "true" ]; then
+    ANCHOR_ROWS+=("| $FID | $NAME | $STATUS | \`$REL_PATH\` |")
+    continue
+  fi
 
-    if [ -z "$C" ] || [ -z "$V" ] || [ -z "$R" ]; then
-      UNSCORED_ROWS+=("| $FID | $NAME | $STATUS | \`$REL_PATH\` |")
-      continue
-    fi
+  if [ -z "$C" ] || [ -z "$V" ] || [ -z "$R" ]; then
+    UNSCORED_ROWS+=("| $FID | $NAME | $STATUS | \`$REL_PATH\` |")
+    continue
+  fi
 
-    SCORE=$(awk -v c="$C" -v v="$V" -v r="$R" 'BEGIN { if (r+0 == 0) print "0"; else printf "%.1f", (c*v)/r }')
-    ROW="| $FID | $NAME | $C | $V | $R | $SCORE | $STATUS | \`$REL_PATH\` |"
+  SCORE=$(awk -v c="$C" -v v="$V" -v r="$R" 'BEGIN { if (r+0 == 0) print "0"; else printf "%.1f", (c*v)/r }')
+  ROW="| $FID | $NAME | $C | $V | $R | $SCORE | $STATUS | \`$REL_PATH\` |"
 
-    if [ "${R%.*}" -ge 4 ] 2>/dev/null; then
-      DEEP_ROWS+=("$SCORE"$'\t'"$ROW")
-    else
-      ACTIVE_ROWS+=("$SCORE"$'\t'"$ROW")
-    fi
-  done
-fi
+  if [ "${R%.*}" -ge 4 ] 2>/dev/null; then
+    DEEP_ROWS+=("$SCORE"$'\t'"$ROW")
+  else
+    ACTIVE_ROWS+=("$SCORE"$'\t'"$ROW")
+  fi
+done < <(list_workspace_dirs "$FEATURES_DIR")
 
 sorted() {
   # Sort tab-prefixed "score\trow" entries by score descending, print rows only.

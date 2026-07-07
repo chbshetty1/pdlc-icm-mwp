@@ -3,6 +3,7 @@
 - **Date:** 2026-07-09
 - **Status:** proposed
 - **Priority:** moderate-high — a resurrected gap. This was originally brainstormed alongside 0002–0006 but dropped when that batch got narrowed to five; worth logging properly now under the monitoring question that surfaced it again.
+- **Status:** adopted (2026-07-07)
 
 ## Problem
 
@@ -34,3 +35,17 @@ Both this and 0003 (computed priority registry) walk `features/*/`, but answer d
 ## What happens if adopted
 
 Replaces "manually open every folder to check for problems" with a single on-demand command, and surfaces stage-level bottlenecks that wouldn't be visible from any single feature's perspective — without adding any always-on watching process the framework has no natural home for.
+
+## Outcome (2026-07-07)
+
+All 5 steps implemented, including the cross-entry factoring called for in step 4:
+
+1. `scripts/status.sh` written: walks `features/*/` and `sprints/*/`, infers each workspace's current stage as the highest-numbered stage with a non-empty `outputs/`, and checks every stage's `outputs/` for `BLOCKED_REASON.md`.
+2. Prints a per-workspace table (name, current stage, blocked yes/no, blocked-at stage, last sync) and a stage-level rollup (active count and blocked count per stage) — separately for Features and Sprints, each section skipped entirely if that directory doesn't exist or is empty.
+3. Since entry 0009 (`SYNC_LOG.md`) already landed, the last-sync column reads real data — the "skip gracefully if 0009 isn't implemented" fallback in the original plan wasn't needed, but the column still degrades to `—` for any workspace that hasn't synced yet.
+4. **Cross-entry factoring done as instructed:** since entry 0003 (`registry.sh`) landed first, its `features/*/` glob loop was extracted into a new `scripts/lib/scan_features.sh` (a `list_workspace_dirs` helper), and `registry.sh` was retrofitted to source and use it instead of its own inline loop. `status.sh` uses the same helper for both `features/` and `sprints/`. Confirmed no regression: re-ran `registry.sh` against a test Core Anchor after the refactor and the output matched pre-refactor behavior exactly.
+5. Tested in a sandbox with three features (one mid-pipeline with a `SYNC_LOG.md`, one deliberately left with a `BLOCKED_REASON.md` at stage 04, one freshly scaffolded with no outputs yet) plus one sprint. All three feature states and the sprint were surfaced correctly in both the per-workspace table and the stage-level rollup (04_architecture_design correctly showed 1 active / 1 blocked).
+
+One deviation from the first draft, caught during testing: an initial single "Blocked" column showing `yes (04_architecture_design)` inline overflowed the fixed-width table for longer stage names, misaligning subsequent columns. Split into two columns (`Blocked` yes/no, `Blocked at` stage-or-—) instead — cleaner and consistent with the fixed-width table style used elsewhere (`registry.sh`'s output, `PRIORITIZATION_GUIDE.md`'s worked example).
+
+Per the versioning workflow from entry `0015`: no `.mwp-templates/` file touched, so no `template-version` bump applies — root `VERSION` bumped from `6` to `7` since `scripts/status.sh`, `scripts/lib/scan_features.sh`, and the `scripts/registry.sh` refactor all ship to products.
