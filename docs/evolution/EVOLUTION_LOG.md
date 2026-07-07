@@ -10,12 +10,28 @@ This is the running record of how this framework's design has been challenged, r
 
 ## Log
 
-| # | Date | Title | Status | Summary |
-|---|---|---|---|---|
-| 0001 | 2026-07-07 | [First-Principles Analysis](0001-first-principles-analysis.md) | proposed | Strips the v1 framework to fundamental truths (context-as-tokens economics, decisions-not-stages, irreversibility over effort, single-writer concurrency). Concludes v1's fixed 6-stage pipeline, Micro/Agile/Lean labels, and C-V-R bypass rule are practical approximations of a more general "Decision Node DAG" model — flags concrete trigger conditions for when to migrate. No changes made to the shipped framework yet. |
+| # | Date | Title | Status | Priority | Summary |
+|---|---|---|---|---|---|
+| 0001 | 2026-07-07 | [First-Principles Analysis](0001-first-principles-analysis.md) | proposed | — | Strips the v1 framework to fundamental truths (context-as-tokens economics, decisions-not-stages, irreversibility over effort, single-writer concurrency). Concludes v1's fixed 6-stage pipeline, Micro/Agile/Lean labels, and C-V-R bypass rule are practical approximations of a more general "Decision Node DAG" model — flags concrete trigger conditions for when to migrate. No changes made to the shipped framework yet. |
+| 0002 | 2026-07-08 | [Cross-Platform Script Verification](0002-cross-platform-script-verification.md) | proposed | 1 of 5 | Automation scripts are bash-only; actual usage environment is Windows PowerShell. Potential live blocker — needs verification via Git Bash/WSL before anything else here matters in practice. |
+| 0003 | 2026-07-08 | [Computed Priority Registry](0003-computed-priority-registry.md) | proposed | 2 of 5 | `FEATURE_PRIORITY_REGISTRY.md` is hand-edited shared state — the same coordination-cost problem the framework warns against for shared schemas, self-inflicted in its own bookkeeping. Proposes generating it from per-feature metadata instead. |
+| 0004 | 2026-07-08 | [Enforce Token Guardrails](0004-enforce-token-guardrails.md) | proposed | 3 of 5 | Every `CONTEXT.md` declares a token ceiling but nothing measures it. Proposes a lightweight check in `sync.sh` so the stated discipline is actually verified. |
+| 0005 | 2026-07-08 | [Automate Shared-Schema Collision Check](0005-automate-shared-schema-collision-check.md) | proposed | 4 of 5 | "Shared Architecture Sync" is currently a prompt-level rule with no mechanical backstop. Proposes a pre-sync check against a formal `shared_paths` list. |
+| 0006 | 2026-07-08 | [Test `--sprint` Mode](0006-test-sprint-mode.md) | proposed | 5 of 5 | `--feature` mode was tested end-to-end this session; `--sprint` shares the code path but was never exercised. Test-coverage gap, not a design problem. |
 
 ## How to use this when evolving the framework
 
-1. Before changing a core mechanic (stage count, scoring formula, isolation model), write an entry here first — dogma / fundamentals / rebuild — even if the answer is "keep it as is, and here's why."
+1. Before changing a core mechanic (stage count, scoring formula, isolation model), write an entry here first — dogma / fundamentals / rebuild for big structural questions, or problem / proposed change / stepwise plan for smaller tactical ones — even if the answer is "keep it as is, and here's why."
 2. If an entry leads to an actual change, update the relevant file (`docs/PRIORITIZATION_GUIDE.md`, stage `CONTEXT.md` templates, etc.) in the same commit, and mark the entry `adopted`.
 3. If you later reverse a decision, don't rewrite history — add a new numbered entry and mark the old one `superseded`, with a one-line pointer to the new entry.
+
+## Proposed → Adopted workflow
+
+Every entry above is currently `proposed`: the analysis and a stepwise plan exist, but no code or template has changed. To move one forward:
+
+1. **Pick one entry**, starting from its priority rank unless something more urgent has surfaced since.
+2. **Run its stepwise plan** as written (each entry already lists the exact steps — no re-planning needed).
+3. **Record the outcome** in the same entry file: append what actually happened, especially if reality diverged from the plan.
+4. **Update the entry's Status** to `adopted` (change made, working as intended), `rejected` (tried or reconsidered, explicitly not doing it — say why), or leave as `proposed` if paused mid-way.
+5. **Update `EVOLUTION_LOG.md`'s table row** to match the new status.
+6. **If adopted**, the actual framework files (`scripts/*.sh`, `.mwp-templates/*`, `docs/*`) get edited in the same commit as the status change — the evolution entry and the shipped change land together, never separately.
