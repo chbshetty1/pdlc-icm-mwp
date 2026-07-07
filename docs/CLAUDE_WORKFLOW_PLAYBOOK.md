@@ -1,6 +1,6 @@
 # Claude Workflow Playbook
 
-How to run a single feature through all 6 stages using Claude Chat, Claude Cowork, and Claude Code CLI as specialized workers, keeping each bounded to its stage folder.
+**Optional.** The framework's folder/`CONTEXT.md` mechanism is agent-agnostic — nothing here is required by the scripts or stage contracts. This is a reference workflow for teams using Claude specifically: how to run a single feature through all 6 stages using Claude Chat, Claude Cowork, and Claude Code CLI as specialized workers, keeping each bounded to its stage folder. Swap in a different agent and the rest of the framework works unchanged.
 
 ## Modality map
 
@@ -43,4 +43,4 @@ Micro-PDLC isolates features, but two features can still need the same shared sc
 
 ## Why this stays token-efficient
 
-Each Claude session only ever sees: the active stage's `CONTEXT.md`, its declared `inputs/`, and explicitly whitelisted upstream files. Switching which folder you `cd` into (Code CLI) or which files you attach (Cowork) is what "changes context" — not a growing conversation history.
+Each

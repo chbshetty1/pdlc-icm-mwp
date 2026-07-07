@@ -10,7 +10,7 @@ This repo is the **engine block**, not a product. It contains no live product da
 |---|---|
 | `.mwp-templates/` | Blueprint files copied into every new product workspace: global identity, stage contracts (6 PDLC stages), escalation and priority-registry templates. |
 | `scripts/` | Automation: `scaffold.sh` (spin up a new feature/sprint workspace), `sync.sh` (advance approved outputs to the next stage), `pivot.sh` (Lean kill-switch), `compact.sh` (context compaction). |
-| `docs/` | `CLAUDE_WORKFLOW_PLAYBOOK.md` (which Claude surface to use per stage), `PRIORITIZATION_GUIDE.md` (C-V-R scoring), `TOOLING_MATRIX.md` (free/open-source tool stack). |
+| `docs/` | `CLAUDE_WORKFLOW_PLAYBOOK.md` (optional — which Claude surface to use per stage, if you're using Claude), `PRIORITIZATION_GUIDE.md` (C-V-R scoring), `TOOLING_MATRIX.md` (free/open-source tool stack). |
 | `hooks/post-commit` | Sample git hook a product repo can adopt to auto-refresh Graphify/Repomix on relevant commits. |
 | `CLAUDE.md` | Root automation-routing rules Claude Code reads when working inside a product workspace built from this template. |
 | `PROJECT_PLAN.md` | Planning history — how this framework's design decisions were made. |
@@ -22,7 +22,7 @@ This repo is the **engine block**, not a product. It contains no live product da
 - **Micro-PDLC by default:** each feature gets its own isolated 01–06 pipeline under `features/FEAT-xxx/`. `scaffold.sh --sprint` supports Agile-PDLC (shared, time-boxed folders) as a fallback mode — same templates, different flag.
 - **Lean overlay:** every stage contract forces a single riskiest-assumption / minimum-scope framing (Build → Measure → Learn), with `pivot.sh` as the kill-switch.
 - **C-V-R prioritization:** score = (Context Cleanliness × Value Velocity) / Refactoring Risk. Foundational "Core Data Anchor" work bypasses the score and runs first, unconditionally.
-- **Claude modality mapping:** Chat/Desktop for stages 01–02, Cowork/Projects for 03–04, Claude Code CLI for 05–06 — see `docs/CLAUDE_WORKFLOW_PLAYBOOK.md`.
+- **Claude modality mapping (optional):** the folder/`CONTEXT.md` mechanism is agent-agnostic — any LLM agent that respects a stage's declared input scope can run it. If you're using Claude specifically, `docs/CLAUDE_WORKFLOW_PLAYBOOK.md` suggests Chat/Desktop for stages 01–02, Cowork/Projects for 03–04, and Claude Code CLI for 05–06. This is a reference workflow, not a requirement — nothing in the scripts or stage contracts depends on it.
 - **Token discipline:** every `CONTEXT.md` declares an explicit read-only input scope and an output token ceiling. Claude only ever sees the active stage folder plus declared upstream references — never the whole repo.
 
 ## Using this framework for a new product
@@ -57,4 +57,4 @@ The original design brainstorm flagged four production gaps; all four are implem
 
 v1 scaffold. Not yet pilot-tested end-to-end. Treat stage contracts and scripts as a strong starting point — expect to revise them after the first real feature runs through all 6 stages.
 
-A first-principles critique of this v1 design already exists at `docs/evolution/0001-first-principles-analysis.md` — it identifies concrete trigger conditions for when the fixed 6-stage/C-V-R model should be replaced with a more general decision-dependency graph. No action needed until one of those triggers actually shows up.
+A fi
