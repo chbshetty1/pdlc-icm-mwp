@@ -28,3 +28,5 @@ Define the single metric that validates or invalidates the riskiest assumption f
 ## 6. On failure
 
 Two failed attempts to define a measurable target → write `BLOCKED_REASON.md` per `../../.mwp-templates/CRITICAL_ESCALATION.md`.
+
+<!-- template-version: 1 -->

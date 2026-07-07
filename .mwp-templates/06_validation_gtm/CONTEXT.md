@@ -27,3 +27,5 @@ Determine Pivot or Persevere against the metric defined in stage 02, using aggre
 ## 6. On Pivot
 
 If the recommendation is Pivot, run `../../scripts/pivot.sh {{FEATURE_NAME}} --pivot` to archive learnings and purge the feature's dead code/specs. Do not leave a pivoted feature's stale files in the active `features/` tree.
+
+<!-- template-version: 1 -->

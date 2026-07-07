@@ -25,3 +25,5 @@
 1. Core Data Anchors always run first and are never scored.
 2. Features with R ≥ 4 move to the Deep Context Backlog and run sequentially with mandatory human review at every stage gate — never in parallel with other features touching the same subsystem.
 3. Everything else runs in the Active Execution Queue, highest score first, and can be parallelized across separate terminal/agent sessions since Micro-PDLC isolates each feature's folder.
+
+<!-- template-version: 1 -->

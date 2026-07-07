@@ -28,3 +28,5 @@
 | Anchor | Status | Path |
 |---|---|---|
 | e.g. Core DB schema + auth | not started | `./features/FEAT-001_core_architecture_and_schema` |
+
+<!-- template-version: 1 -->

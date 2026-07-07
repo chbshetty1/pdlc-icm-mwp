@@ -28,3 +28,5 @@ Synthesize raw, unstructured input (interviews, notes, market data) into a singl
 ## 6. On failure
 
 If two consecutive attempts fail to produce a falsifiable assumption, write `./outputs/BLOCKED_REASON.md` per `../../.mwp-templates/CRITICAL_ESCALATION.md` and stop.
+
+<!-- template-version: 1 -->

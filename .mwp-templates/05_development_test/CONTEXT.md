@@ -31,3 +31,5 @@ Write the minimum code and tests to satisfy the specs and architecture — nothi
 ## 6. On failure
 
 If tests fail twice consecutively after fix attempts, stop. Write `BLOCKED_REASON.md` per `../../.mwp-templates/CRITICAL_ESCALATION.md` with the failing test output attached. Do not attempt a third fix unattended.
+
+<!-- template-version: 1 -->

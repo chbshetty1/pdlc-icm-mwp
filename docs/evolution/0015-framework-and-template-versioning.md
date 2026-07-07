@@ -1,7 +1,7 @@
 # 0015 — Framework-Level Version + Per-Template Version Markers
 
 - **Date:** 2026-07-09
-- **Status:** proposed
+- **Status:** adopted (2026-07-07)
 - **Priority:** moderate — no active pain yet, but the gap gets more expensive to retrofit the more products get built from this framework.
 
 ## Problem
@@ -31,3 +31,15 @@ Explicitly not building yet: any automated tool that pulls newer templates into 
 ## What happens if adopted
 
 Answers "what did we start from" cheaply, without building the harder "how do we catch up" tooling before anyone actually needs it.
+
+## Outcome (2026-07-07)
+
+All 5 steps implemented as written:
+
+1. Root `VERSION` file added, starting at `1` — the baseline reflects everything already adopted (0002, 0013), not just changes from this point forward.
+2. `<!-- template-version: 1 -->` appended as the last line of all 10 files under `.mwp-templates/`: the six stage `CONTEXT.md` files, `IDENTITY.md`, `GLOBAL_CONTEXT.template.md`, `CRITICAL_ESCALATION.md`, `FEATURE_PRIORITY_REGISTRY.template.md`.
+3. `EVOLUTION_LOG.md`'s "Proposed → Adopted workflow" step 6 extended: an adopted change now also bumps the touched file's `template-version` line, and bumps root `VERSION` if the change ships to products.
+4. `README.md`'s product-init walkthrough now copies `VERSION` alongside `.mwp-templates/`, `scripts/`, and `CLAUDE.md`, with a note that the markers show origin, not currency. Also added a `VERSION` row to the "What's in here" table.
+5. No comparison/upgrade tooling built — as planned, just the markers.
+
+No deviations from the stepwise plan.

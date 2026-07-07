@@ -30,3 +30,5 @@ Convert specs into a static, minimal system design. Check for collisions with sh
 ## 6. On failure / conflict
 
 If a proposed change conflicts with an existing shared schema, do not silently override it. Write `BLOCKED_REASON.md` per `../../.mwp-templates/CRITICAL_ESCALATION.md` describing the conflict and stop.
+
+<!-- template-version: 1 -->

@@ -34,3 +34,5 @@ Every stage `CONTEXT.md` references this file under "On failure." When triggered
 ## Human resolution
 
 A human reviews `BLOCKED_REASON.md` in Obsidian, resolves the underlying issue (edits an upstream file, makes an architectural call, adjusts scope), deletes or archives the `BLOCKED_REASON.md`, and re-runs the stage. This file existing in `outputs/` is itself the signal that a stage is paused — automation should treat its presence as a hard stop.
+
+<!-- template-version: 1 -->

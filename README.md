@@ -22,6 +22,7 @@ The optional per-stage tools (Fabric, Graphify, Repomix, Mermaid CLI, DuckDB, Ob
 | `docs/FAQ.md` | Answers to recurring meta-questions (is Claude required, can the framework develop itself, is that a PDLC, git/repo operational lessons). **Travels with new products.** |
 | `hooks/post-commit` | Sample git hook a product repo can adopt to auto-refresh Graphify/Repomix on relevant commits. |
 | `CLAUDE.md` | Root automation-routing rules Claude Code reads when working inside a product workspace built from this template. |
+| `VERSION` | Plain incrementing number, bumped whenever an adopted change ships to `.mwp-templates/`, `scripts/`, or `CLAUDE.md`. Tells a product repo what point in this framework's history it started from — not whether it's current. **Travels with new products.** |
 | `PROJECT_PLAN.md` | Planning history — how this framework's design decisions were made. **Framework-repo only, does not travel.** |
 | `docs/evolution/` | Append-only log of this framework template's own design analyses, critiques, and changes — see `EVOLUTION_LOG.md` for the convention. **Framework-repo only, does not travel** (the convention is reusable for your own product if you want it — the specific entries aren't). |
 
@@ -44,6 +45,12 @@ mkdir ../my-new-product && cd ../my-new-product && git init
 cp -r ../"PDLC - ICM-MWP"/.mwp-templates ./.mwp-templates
 cp -r ../"PDLC - ICM-MWP"/scripts ./scripts
 cp ../"PDLC - ICM-MWP"/CLAUDE.md ./CLAUDE.md
+cp ../"PDLC - ICM-MWP"/VERSION ./VERSION
+# The root VERSION file and each .mwp-templates/ file's `template-version`
+# comment travel with this copy. They tell you what point in the framework's
+# history you started from — not whether you're still current. There's no
+# tooling yet that checks your copy against a newer framework version; that's
+# a manual diff for now (see docs/evolution/0015-framework-and-template-versioning.md).
 
 # 3. Copy the reference docs a product team actually needs day-to-day
 mkdir -p ./docs

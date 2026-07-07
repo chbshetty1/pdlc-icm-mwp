@@ -29,3 +29,5 @@ Convert the locked objective and metric into minimal, testable engineering speci
 ## 6. On failure
 
 If a spec can't be made to map to a defined metric after two attempts, write `BLOCKED_REASON.md` per `../../.mwp-templates/CRITICAL_ESCALATION.md`.
+
+<!-- template-version: 1 -->
