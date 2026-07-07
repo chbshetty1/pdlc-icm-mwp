@@ -25,7 +25,7 @@ This is the running record of how this framework's design has been challenged, r
 | 0011 | 2026-07-09 | [Generalize FAQ-Capture Wording](0011-generalize-faq-capture-wording.md) | proposed | 5 of 6 | `CLAUDE.md`'s FAQ-capture instruction says "the framework," which could be read too narrowly once copied into a product repo. Proposes wording that covers both cases. |
 | 0012 | 2026-07-09 | [Shared-Learnings File](0012-shared-learnings-file.md) | proposed | 6 of 6 | No home exists for incidental cross-feature discoveries (rate limits, library quirks) distinct from `GLOBAL_CONTEXT.md`'s deliberate constraints. Proposes a `LEARNINGS.md` any stage can append to. |
 
-| 0013 | 2026-07-09 | [Verify the Tooling Matrix Actually Works](0013-verify-tooling-matrix.md) | proposed | high | `TOOLING_MATRIX.md` documents a tool stack that's never actually been installed or run. Proposes verifying each tool for real, split into what's sandbox-testable (Repomix, graphifyy, DuckDB, Mermaid CLI) versus user-machine-only (Fabric, Obsidian). |
+| 0013 | 2026-07-09 | [Verify the Tooling Matrix Actually Works](0013-verify-tooling-matrix.md) | proposed | high | `TOOLING_MATRIX.md` documents a tool stack that's never actually been installed or run. Proposes verifying each tool for real (split sandbox-testable vs. user-machine-only), plus a `doctor.sh` two-layer check (on-demand full scan + lazy per-stage check reusing the escalation contract) with auto-install strictly opt-in via `--install-missing`, never on by default. |
 
 *Note: 0002–0006 and 0007–0012 are two separate priority batches from two separate brainstorming passes — "1 of 5" and "1 of 6" rank within their own batch, not against each other. 0013 stands alone, same urgency class as 0002.*
 
