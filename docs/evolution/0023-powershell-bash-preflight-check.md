@@ -1,7 +1,7 @@
 # 0023 — PowerShell-Native Bash Pre-Flight Check
 
 - **Date:** 2026-07-09
-- **Status:** proposed
+- **Status:** adopted (2026-07-07)
 - **Priority:** see entry 0024 (ranking update).
 
 ## Problem
@@ -22,8 +22,13 @@ A small, standalone PowerShell script (`scripts/preflight.ps1`) that can be run 
 
 Closes the one prerequisite gap that can't be caught by `doctor.sh` itself, since `doctor.sh` requires the very thing being checked for. Cheap, and prevents a confusing raw shell error for anyone new to this framework on Windows.
 
-## Progress (2026-07-07, in progress — not yet adopted)
+## Outcome (2026-07-07)
 
-Steps 1–2 done: `scripts/preflight.ps1` written (`Get-Command bash -ErrorAction SilentlyContinue`; prints a green `[ok]` with the resolved path if found, or red `[missing]` plus both install options — Git for Windows via `winget install --id Git.Git -e --source winget` or `wsl --install` — and exits non-zero if not). `README.md`'s Prerequisites section updated to point to it as an optional first check.
+Steps 1–2 done as planned: `scripts/preflight.ps1` written (`Get-Command bash -ErrorAction SilentlyContinue`; prints a green `[ok]` with the resolved path if found, or red `[missing]` plus both install options — Git for Windows via `winget install --id Git.Git -e --source winget` or `wsl --install` — and exits non-zero if not). `README.md`'s Prerequisites section updated to point to it as an optional first check.
 
-**Step 3 (testing) could not be done in this environment.** This session's sandbox has no PowerShell available at all (`pwsh` isn't installed), unlike entries 0003/0005/0009 where a bash sandbox was usable for real testing — there's no equivalent fallback here. This is the same class of limitation as entry 0002: the thing being verified (correct behavior against Windows' real PATH and installed tools) only means something on the actual machine. Entry stays `proposed` until both branches are confirmed there.
+Step 3 (testing) happened on the user's real machine, since this session's sandbox has no PowerShell at all — a harder limitation than entries 0003/0005/0009, where a bash sandbox was at least usable for real testing.
+
+- **Found branch: confirmed directly.** `.\scripts\preflight.ps1` printed `[ok] bash found at C:\Windows\system32\bash.exe`.
+- **Missing branch: adapted, then confirmed.** The original plan (step 3) suggested "temporarily renaming bash or checking a clean PATH" to simulate absence. Neither worked: `C:\Windows\System32\bash.exe` is a Windows-shipped WSL launcher stub that exists unconditionally on modern Windows — trimming `PATH` down to just `System32` still finds it, since that's exactly where it lives, and renaming a system binary isn't something worth asking a user to do just to test a doc script. Verified the branch logic instead by running an equivalent script pointed at a command guaranteed not to exist (`zzz-definitely-not-real`) — identical `Get-Command ... -ErrorAction SilentlyContinue` / if-else / red-text / `exit 1` shape as the real script, just aimed at something that can't be found. Got the red `[missing]` message and exit code `1` as expected.
+
+**Worth recording as its own lesson:** on a modern Windows machine, "bash is completely absent" may not be a realistically testable state at all, since the WSL stub ships by default — this check's real value is likely narrower than the original problem statement assumed (catching an unset `PATH` or a broken install, not "bash was never touched"). Not a reason to drop the check, just a more honest scope for what it catches.
