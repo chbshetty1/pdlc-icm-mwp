@@ -33,7 +33,10 @@ This is the running record of how this framework's design has been challenged, r
 
 | 0016 | 2026-07-09 | [On-Demand Status/Monitoring Script](0016-status-monitoring-script.md) | proposed | moderate-high | No at-a-glance view exists of what's blocked or in-progress across active features. Proposes `scripts/status.sh`: per-feature stage/blocked status plus a stage-level rollup, on-demand only, no alerting. Shares scan logic with 0003. Resurrects an idea dropped from the original 0002-0006 batch. |
 
-*Note: 0002–0006 and 0007–0012 are two separate priority batches from two separate brainstorming passes — "1 of 5" and "1 of 6" rank within their own batch, not against each other. 0013, 0014, 0015, and 0016 stand alone, same urgency class as 0002.*
+| 0017 | 2026-07-09 | [Consolidated CONSTRAINTS.md](0017-consolidated-constraints-doc.md) | proposed | low-moderate | Framework-level non-negotiables (no auto-install, no configurable logging, no alerting, directory containment) are scattered across several files. Proposes one consolidated `docs/CONSTRAINTS.md` — documentation only, no behavior change. |
+| 0018 | 2026-07-09 | [Verify Scope/Directory Containment](0018-scope-containment-verification.md) | proposed | high | The single most foundational constraint in the framework — an agent only reads its declared scope — has zero verification, unlike the artifact-level checks in 0004/0005. Proposes a self-reported Context Manifest reviewed at the human gate; explicitly not airtight, with mechanical file-access tracing noted as a future escalation only if needed. |
+
+*Note: 0002–0006 and 0007–0012 are two separate priority batches from two separate brainstorming passes — "1 of 5" and "1 of 6" rank within their own batch, not against each other. 0013 through 0018 stand alone; 0018 is the highest-priority item in the whole backlog given how foundational the gap is.*
 
 ## How to use this when evolving the framework
 
