@@ -1,0 +1,16 @@
+#!/bin/bash
+# Sample git hook. In a product repo built from this framework, copy this
+# file to .git/hooks/post-commit and run: chmod +x .git/hooks/post-commit
+set -euo pipefail
+
+TOUCHED_FILES=$(git diff --name-only HEAD~1 2>/dev/null || true)
+
+if echo "$TOUCHED_FILES" | grep -qE '\.(ts|js|py|go|rs|md)$' && command -v graphify >/dev/null 2>&1; then
+  echo "Rebuilding Graphify knowledge graph..."
+  graphify . --silent || true
+fi
+
+if echo "$TOUCHED_FILES" | grep -q "05_development_test/" && command -v repomix >/dev/null 2>&1; then
+  echo "Repacking development context with Repomix..."
+  repomix || true
+fi

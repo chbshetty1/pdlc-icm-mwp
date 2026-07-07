@@ -1,0 +1,11 @@
+# This is a framework template repo — it should never accumulate live product data.
+features/
+sprints/
+.archive/
+.mwp/GLOBAL_CONTEXT.md
+graphify-out/
+*.repomix-output.*
+.DS_Store
+node_modules/
+__pycache__/
+*.pyc
