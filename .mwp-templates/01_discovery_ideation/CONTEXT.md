@@ -8,9 +8,11 @@ Synthesize raw, unstructured input (interviews, notes, market data) into a singl
 
 - READ ONLY: local files in `./inputs/`
 - READ ONLY: `../../.mwp/GLOBAL_CONTEXT.md`
+- READ ONLY (if present): `../../../LESSONS_LEARNED.md` — the product's running register of already-disproven hypotheses from pivoted features.
 
 ## 3. Execution rules
 
+- Before forming the riskiest assumption, check `../../../LESSONS_LEARNED.md` if it exists — don't propose (or re-propose) an assumption that register shows was already tested and invalidated.
 - Identify the **one** fundamental assumption that must be true for this feature to succeed. Discard anything that doesn't validate or invalidate it.
 - If `inputs/` contains raw transcripts or long text, pipe through `fabric` first; do not paste raw text into the model.
 - No conversational filler. No multi-page persona documents.
@@ -30,4 +32,4 @@ Synthesize raw, unstructured input (interviews, notes, market data) into a singl
 
 If two consecutive attempts fail to produce a falsifiable assumption, write `./outputs/BLOCKED_REASON.md` per `../../.mwp-templates/CRITICAL_ESCALATION.md` and stop.
 
-<!-- template-version: 2 -->
+<!-- template-version: 3 -->

@@ -16,8 +16,8 @@ The optional per-stage tools (Fabric, Graphify, Repomix, Mermaid CLI, DuckDB, Ob
 
 | Path | Purpose |
 |---|---|
-| `.mwp-templates/` | Blueprint files copied into every new product workspace: global identity, stage contracts (6 PDLC stages), escalation template, feature-metadata template, and a reference copy of the generated priority-registry format. |
-| `scripts/` | Automation: `scaffold.sh` (spin up a new feature/sprint workspace, including its `FEATURE_META.md`), `sync.sh` (advance approved outputs to the next stage — warns on token-guardrail overruns, checks for shared-path collisions, logs an optional `[approver]` to `SYNC_LOG.md`), `pivot.sh` (Lean kill-switch), `compact.sh` (context compaction), `doctor.sh` (check, and optionally install, the tool stack in `docs/TOOLING_MATRIX.md`), `registry.sh` (regenerate `.mwp/FEATURE_PRIORITY_REGISTRY.md` from every feature's `FEATURE_META.md` — never hand-edit the registry), `status.sh` (on-demand per-feature + stage-level rollup of what's blocked or in-progress, no alerting), `lib/scan_features.sh` (shared `features/*/`/`sprints/*/` scan helper used by `registry.sh` and `status.sh`). |
+| `.mwp-templates/` | Blueprint files copied into every new product workspace: global identity, stage contracts (6 PDLC stages), escalation template, feature-metadata template, lessons-learned register template, and a reference copy of the generated priority-registry format. |
+| `scripts/` | Automation: `scaffold.sh` (spin up a new feature/sprint workspace, including its `FEATURE_META.md`), `sync.sh` (advance approved outputs to the next stage — warns on token-guardrail overruns, checks for shared-path collisions, logs an optional `[approver]` to `SYNC_LOG.md`), `pivot.sh` (Lean kill-switch — also distills a summary row into `LESSONS_LEARNED.md` before purging a killed feature), `compact.sh` (context compaction), `doctor.sh` (check, and optionally install, the tool stack in `docs/TOOLING_MATRIX.md`), `registry.sh` (regenerate `.mwp/FEATURE_PRIORITY_REGISTRY.md` from every feature's `FEATURE_META.md` — never hand-edit the registry), `status.sh` (on-demand per-feature + stage-level rollup of what's blocked or in-progress, no alerting), `lib/scan_features.sh` (shared `features/*/`/`sprints/*/` scan helper used by `registry.sh` and `status.sh`). |
 | `docs/CLAUDE_WORKFLOW_PLAYBOOK.md` | Optional — which Claude surface to use per stage, if you're using Claude. **Travels with new products.** |
 | `docs/PRIORITIZATION_GUIDE.md` | C-V-R scoring for product features. **Travels with new products.** |
 | `docs/TOOLING_MATRIX.md` | Free/open-source tool stack. **Travels with new products.** |
@@ -70,7 +70,12 @@ cp ../"PDLC - ICM-MWP"/docs/TOOLING_MATRIX.md ./docs/
 cp .mwp-templates/GLOBAL_CONTEXT.template.md .mwp/GLOBAL_CONTEXT.md
 # edit .mwp/GLOBAL_CONTEXT.md with your real stack, product name, constraints
 
-# 5. Spin up your first feature (always a Core Data Anchor first)
+# 5. Set up the lessons-learned register (pivot.sh will also self-create this
+# on the first --pivot if you skip this step, but copying it now keeps its
+# header/instructions intact from the start)
+cp .mwp-templates/LESSONS_LEARNED.template.md ./LESSONS_LEARNED.md
+
+# 6. Spin up your first feature (always a Core Data Anchor first)
 bash scripts/scaffold.sh --feature FEAT-001_core_architecture_and_schema
 ```
 
