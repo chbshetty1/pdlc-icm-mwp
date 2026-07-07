@@ -24,3 +24,34 @@ Both — it's a shipped, committed part of the repo (listed in `README.md`'s fil
 ## Why isn't the C-V-R prioritization formula used for framework-evolution entries?
 
 C-V-R scores product features against business/engineering risk. Evolution entries are scored informally by priority rank (see each entry's "Priority: N of 5") based on how much real friction they remove versus how speculative they are — closer to expected-value-of-information than to C-V-R's specific formula. If this framework migrates toward the Decision Node model described in entry 0001, both product features and framework-evolution entries would likely score the same way.
+
+## Can I just build my product directly inside this framework repo instead of copying it elsewhere?
+
+Don't. Nothing technically stops you, but `features/` and `sprints/` are gitignored specifically so this repo stays reusable across every future product. Build directly here and you lose the ability to cleanly reuse the framework next time — you'd have to manually pick the generic parts back out of a repo full of one product's history. Always copy `.mwp-templates/`, `scripts/`, and `CLAUDE.md` into a new, separate product repo, per the README's "Using this framework for a new product" steps.
+
+## Should I let an AI agent (Claude Code, Cowork, etc.) run git commands directly against my working folder?
+
+Be cautious about this, especially since Claude Code CLI is one of the three surfaces this framework's own playbook recommends for stages 05–06. While building this repo, running `git init`/`git commit` through a sandboxed AI environment against a folder synced from a real disk caused real corruption — `.git/config` came back zero-filled, and stale lock files (`index.lock`) were left behind, blocking all future git operations until manually cleared. The sandbox's file-sync mechanism didn't handle git's atomic rename/lock-file writes correctly, even though plain file reads/writes/deletes worked fine.
+
+The safe pattern that worked: do git operations (`init`, `add`, `commit`, `push`) from your own terminal, on your own machine, using your own git installation. If an agent needs to prepare a repo on your behalf, it should build it in an isolated scratch location first and copy only the *finished* `.git` directory over as a whole-file copy — never run git commands incrementally against a live, synced working folder.
+
+## My first `git push` to a freshly created GitHub repo was rejected as "non-fast-forward" — why?
+
+GitHub can add an initial commit (e.g. a license file) even when you think every "initialize this repository" checkbox was left unchecked — this happened during this framework's own setup. Check what's actually on the remote before assuming a real conflict:
+
+```
+git fetch origin
+git show origin/main --stat
+```
+
+If it's just a placeholder file with nothing you need, it's safe to overwrite:
+
+```
+git push --force-with-lease --set-upstream origin main
+```
+
+`--force-with-lease` is safer than plain `--force` — it double-checks the remote hasn't changed unexpectedly since your last fetch before overwriting anything.
+
+## How should I name and describe a repo built from this framework?
+
+Lowercase, hyphenated (`your-product-name`, not `YourProductName`) — GitHub URLs are case-insensitive anyway, and it matches the near-universal convention plus any tooling that assumes lowercase paths. For the repo's top-line description, keep it agent-agnostic even if you use Claude day-to-day — the core folder/`CONTEXT.md` mechanism works with any LLM agent, and naming one product in the front-door pitch narrows your audience and can read like an implied endorsement you don't have. Save Claude-specific detail for `docs/CLAUDE_WORKFLOW_PLAYBOOK.md`, where it's accurately scoped to where it actually applies.
