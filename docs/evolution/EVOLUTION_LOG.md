@@ -18,6 +18,14 @@ This is the running record of how this framework's design has been challenged, r
 | 0004 | 2026-07-08 | [Enforce Token Guardrails](0004-enforce-token-guardrails.md) | proposed | 3 of 5 | Every `CONTEXT.md` declares a token ceiling but nothing measures it. Proposes a lightweight check in `sync.sh` so the stated discipline is actually verified. |
 | 0005 | 2026-07-08 | [Automate Shared-Schema Collision Check](0005-automate-shared-schema-collision-check.md) | proposed | 4 of 5 | "Shared Architecture Sync" is currently a prompt-level rule with no mechanical backstop. Proposes a pre-sync check against a formal `shared_paths` list. |
 | 0006 | 2026-07-08 | [Test `--sprint` Mode](0006-test-sprint-mode.md) | proposed | 5 of 5 | `--feature` mode was tested end-to-end this session; `--sprint` shares the code path but was never exercised. Test-coverage gap, not a design problem. |
+| 0007 | 2026-07-09 | [Product-Level Decision Log](0007-product-level-decision-log.md) | proposed | 1 of 6 | Products built from this framework have no equivalent of `docs/evolution/` for their own architecture decisions. Proposes shipping a blank decision-log template with every new product instead of leaving it as a suggestion. |
+| 0008 | 2026-07-09 | [Lessons-Learned Register](0008-lessons-learned-register.md) | proposed | 2 of 6 | Pivoted features get archived but not summarized — nothing stops a disproven hypothesis from being retried later. Proposes `pivot.sh` auto-appending to a running `LESSONS_LEARNED.md`. |
+| 0009 | 2026-07-09 | [Sync Audit Trail](0009-sync-audit-trail.md) | proposed | 3 of 6 | `sync.sh` advances stage outputs but records no approval trail. Proposes an optional approver argument and a `SYNC_LOG.md` append on every successful sync. |
+| 0010 | 2026-07-09 | [Archive, Don't Delete, Escalations](0010-archive-not-delete-escalations.md) | proposed | 4 of 6 | `CRITICAL_ESCALATION.md` currently allows deleting a resolved `BLOCKED_REASON.md`, losing failure-mode history. Proposes archive-only, never delete. |
+| 0011 | 2026-07-09 | [Generalize FAQ-Capture Wording](0011-generalize-faq-capture-wording.md) | proposed | 5 of 6 | `CLAUDE.md`'s FAQ-capture instruction says "the framework," which could be read too narrowly once copied into a product repo. Proposes wording that covers both cases. |
+| 0012 | 2026-07-09 | [Shared-Learnings File](0012-shared-learnings-file.md) | proposed | 6 of 6 | No home exists for incidental cross-feature discoveries (rate limits, library quirks) distinct from `GLOBAL_CONTEXT.md`'s deliberate constraints. Proposes a `LEARNINGS.md` any stage can append to. |
+
+*Note: 0002–0006 and 0007–0012 are two separate priority batches from two separate brainstorming passes — "1 of 5" and "1 of 6" rank within their own batch, not against each other.*
 
 ## How to use this when evolving the framework
 
