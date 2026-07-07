@@ -27,7 +27,9 @@ This is the running record of how this framework's design has been challenged, r
 
 | 0013 | 2026-07-09 | [Verify the Tooling Matrix Actually Works](0013-verify-tooling-matrix.md) | proposed | high | `TOOLING_MATRIX.md` documents a tool stack that's never actually been installed or run. Proposes verifying each tool for real (split sandbox-testable vs. user-machine-only), plus a `doctor.sh` two-layer check (on-demand full scan + lazy per-stage check reusing the escalation contract) with auto-install strictly opt-in via `--install-missing`, never on by default. |
 
-*Note: 0002–0006 and 0007–0012 are two separate priority batches from two separate brainstorming passes — "1 of 5" and "1 of 6" rank within their own batch, not against each other. 0013 stands alone, same urgency class as 0002.*
+| 0014 | 2026-07-09 | [Minimal Operational Log](0014-minimal-operational-log.md) | proposed | moderate | Scripts echo to stdout but nothing persists it. Proposes a single always-on `.mwp/framework.log` (one line per invocation, no levels, no per-stage config) — deliberately rejects configurable logging as reintroducing the "coordination requires software" dogma entry 0001 already flagged. |
+
+*Note: 0002–0006 and 0007–0012 are two separate priority batches from two separate brainstorming passes — "1 of 5" and "1 of 6" rank within their own batch, not against each other. 0013 and 0014 stand alone, same urgency class as 0002.*
 
 ## How to use this when evolving the framework
 
