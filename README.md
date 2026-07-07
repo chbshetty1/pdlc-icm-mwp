@@ -15,6 +15,7 @@ This repo is the **engine block**, not a product. It contains no live product da
 | `CLAUDE.md` | Root automation-routing rules Claude Code reads when working inside a product workspace built from this template. |
 | `PROJECT_PLAN.md` | Planning history — how this framework's design decisions were made. |
 | `docs/evolution/` | Append-only log of design analyses, critiques, and changes over time — see `EVOLUTION_LOG.md` for the index and the convention for adding new entries. |
+| `docs/FAQ.md` | Answers to recurring meta-questions (is Claude required, can the framework develop itself, is that a PDLC, how `docs/evolution/` relates to the 6-stage pipeline). |
 
 ## Core design
 
