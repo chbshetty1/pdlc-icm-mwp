@@ -65,3 +65,23 @@ Yes, going forward — `CLAUDE.md`'s root instructions now tell Claude Code (CLI
 ## How should I name and describe a repo built from this framework?
 
 Lowercase, hyphenated (`your-product-name`, not `YourProductName`) — GitHub URLs are case-insensitive anyway, and it matches the near-universal convention plus any tooling that assumes lowercase paths. For the repo's top-line description, keep it agent-agnostic even if you use Claude day-to-day — the core folder/`CONTEXT.md` mechanism works with any LLM agent, and naming one product in the front-door pitch narrows your audience and can read like an implied endorsement you don't have. Save Claude-specific detail for `docs/CLAUDE_WORKFLOW_PLAYBOOK.md`, where it's accurately scoped to where it actually applies.
+
+## When does the framework check whether a required tool (Fabric, Graphify, Repomix, DuckDB) is installed — and does it install missing ones automatically?
+
+Two layers, once entry `0013` is implemented: an on-demand `doctor.sh` that scans the whole tool matrix at once (run manually, whenever), and a lazy per-stage check right before `CLAUDE.md`'s automation routing tries to invoke a tool — if it's missing, that check fails clearly via the existing escalation contract (`BLOCKED_REASON.md`) instead of a cryptic "command not found" mid-task. Nothing checks at `scaffold.sh` time, since a feature might not reach the stage that needs a given tool for a while.
+
+No auto-install by default. Installing software is a bigger side effect than anything else this framework does — everything else is scoped to reading/writing markdown in a declared folder. A missing tool escalates with the exact install command; a human decides whether to run it. `doctor.sh --install-missing` exists as an explicit opt-in for anyone who wants the convenience, but it's never the default behavior. See `docs/evolution/0013-verify-tooling-matrix.md`.
+
+## Does the framework support configurable logging (log levels, per-stage verbosity)?
+
+No, deliberately. What exists (once entry `0014` is implemented) is a single always-on operational log — one line per script invocation, no levels, no per-stage config — because a configurable logging subsystem is exactly the kind of machinery entry `0001`'s first-principles analysis already flagged as the "coordination requires software" dogma this framework rejects. It would also add more surface area that context-bundling tools (Repomix, Graphify) have to be told to ignore, and a shared config file editable by multiple features risks becoming the same class of coordination-cost problem entry `0003` is trying to fix for the priority registry. See `docs/evolution/0014-minimal-operational-log.md`.
+
+## Does the framework monitor active features, and does that happen per-stage?
+
+Yes to both, but only as an on-demand check, not a running/alerting system — there's no daemon or service in this framework for a monitor to live in. Once entry `0016` is implemented, `scripts/status.sh` scans all active features on request and reports two views from one scan: per-feature (current stage, blocked or not) and a stage-level rollup (how many features are sitting at, or blocked at, each of the 6 stages). The stage-level view is what surfaces systemic problems — if features keep stalling at the same stage, that's a signal the stage's contract or tooling needs attention, not that each feature independently had bad luck.
+
+No alerting (Slack pings, "notify if blocked > N days") is planned — same reasoning as no-auto-install (`0013`) and no-configurable-logging (`0014`): building a watcher implies a running system this framework doesn't have, and there's no concrete need for one yet. See `docs/evolution/0016-status-monitoring-script.md`.
+
+## Is the framework itself versioned? Are individual stages versioned?
+
+Yes to both, but lightly — no full semver, no automated upgrade tool. A root `VERSION` file (a plain incrementing number) gets bumped whenever an evolution entry is adopted and changes something shipped. Each file in `.mwp-templates/` carries its own one-line version marker, incremented independently, since stages evolve at different rates. This exists specifically because propagation to new products is a plain file copy, not a git submodule — the moment a product repo copies `.mwp-templates/`, it loses this repo's git history, so a version marker is the only way to later tell "what did we start from." There's deliberately no automated tool yet that pulls newer templates into an existing product and merges them against that product's own changes — no concrete need for that has shown up. See `docs/evolution/0015-framework-and-template-versioning.md`.

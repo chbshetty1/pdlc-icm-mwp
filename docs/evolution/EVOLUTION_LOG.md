@@ -29,7 +29,11 @@ This is the running record of how this framework's design has been challenged, r
 
 | 0014 | 2026-07-09 | [Minimal Operational Log](0014-minimal-operational-log.md) | proposed | moderate | Scripts echo to stdout but nothing persists it. Proposes a single always-on `.mwp/framework.log` (one line per invocation, no levels, no per-stage config) — deliberately rejects configurable logging as reintroducing the "coordination requires software" dogma entry 0001 already flagged. |
 
-*Note: 0002–0006 and 0007–0012 are two separate priority batches from two separate brainstorming passes — "1 of 5" and "1 of 6" rank within their own batch, not against each other. 0013 and 0014 stand alone, same urgency class as 0002.*
+| 0015 | 2026-07-09 | [Framework-Level Version + Per-Template Version Markers](0015-framework-and-template-versioning.md) | proposed | moderate | Propagation is a plain `cp`, severing git history the moment a product copies `.mwp-templates/`. Proposes a root `VERSION` file plus a per-file `template-version` marker — deliberately no semver ceremony or auto-upgrade tooling until there's a concrete need. |
+
+| 0016 | 2026-07-09 | [On-Demand Status/Monitoring Script](0016-status-monitoring-script.md) | proposed | moderate-high | No at-a-glance view exists of what's blocked or in-progress across active features. Proposes `scripts/status.sh`: per-feature stage/blocked status plus a stage-level rollup, on-demand only, no alerting. Shares scan logic with 0003. Resurrects an idea dropped from the original 0002-0006 batch. |
+
+*Note: 0002–0006 and 0007–0012 are two separate priority batches from two separate brainstorming passes — "1 of 5" and "1 of 6" rank within their own batch, not against each other. 0013, 0014, 0015, and 0016 stand alone, same urgency class as 0002.*
 
 ## How to use this when evolving the framework
 
