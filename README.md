@@ -28,6 +28,7 @@ The optional per-stage tools (Fabric, Graphify, Repomix, Mermaid CLI, DuckDB, Ob
 | `VERSION` | Plain incrementing number, bumped whenever an adopted change ships to `.mwp-templates/`, `scripts/`, or `CLAUDE.md`. Tells a product repo what point in this framework's history it started from — not whether it's current. **Travels with new products.** |
 | `PROJECT_PLAN.md` | Planning history — how this framework's design decisions were made. **Framework-repo only, does not travel.** |
 | `docs/evolution/` | Append-only log of this framework template's own design analyses, critiques, and changes — see `EVOLUTION_LOG.md` for the convention. **Framework-repo only, does not travel** (the convention is reusable for your own product if you want it — the specific entries aren't). |
+| `docs/DEVELOPMENT.md` | How to develop *this framework itself* — change process, script conventions, doc map, adoption checklist, known cross-entry collisions. **Framework-repo only, does not travel.** |
 
 ## Core design
 

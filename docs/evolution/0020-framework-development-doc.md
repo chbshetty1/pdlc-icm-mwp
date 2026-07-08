@@ -1,8 +1,8 @@
 # 0020 — Framework Development Documentation (`docs/DEVELOPMENT.md`)
 
 - **Date:** 2026-07-09
-- **Status:** proposed
-- **Priority:** see entry 0021 (unified ranking) — this entry doesn't carry its own standalone priority label, per the pattern already used for 0013–0018.
+- **Status:** adopted (2026-07-08)
+- **Priority:** ranked 15 of 20 by entry `0026`'s unified backlog re-prioritization (superseding the earlier 0021 reference above, which is itself superseded).
 
 ## Problem
 
@@ -29,3 +29,14 @@ Explicitly not in scope: per-script or per-stage-template documentation beyond w
 ## What happens if adopted
 
 Anyone (including a future Claude session) who wants to modify this framework's own scripts or templates has one place to learn the conventions already in use, instead of inferring them from example — same discoverability benefit as 0017's `CONSTRAINTS.md`, applied to contribution mechanics instead of behavioral non-negotiables.
+
+## Outcome (2026-07-08)
+
+All 4 steps executed, with the collision list rewritten rather than copied verbatim:
+
+1. `docs/DEVELOPMENT.md` written with the five planned sections. Change process links to `EVOLUTION_LOG.md` rather than restating it. Script conventions state the `set -euo pipefail` / `usage()` + validation / scratch-copy-testing pattern explicitly for the first time. Documentation map covers all 9 doc files currently in the repo, including `docs/CONSTRAINTS.md` (landed via entry 0017, after this entry was originally written) and this file itself. General adoption checklist folds in entry 0015's versioning step as mandatory, per the original plan's instruction.
+2. Linked from `README.md`'s file table, marked framework-repo-only alongside `docs/evolution/` and `PROJECT_PLAN.md`.
+3. Cross-checked against `EVOLUTION_LOG.md` and `docs/FAQ.md` for duplication — none found; `docs/FAQ.md`'s self-hosting answer updated with a one-line pointer to this file instead (whether/when to self-host stays in the FAQ, how stays here).
+4. **Known cross-entry collisions rewritten for current state**, not copied from the entry's original text — most of the originally-listed collisions (0018/0012 on stage `CONTEXT.md`, 0003/0016 sharing scan logic, 0016 depending on 0009's `SYNC_LOG.md`) are now resolved since those entries have since landed. Replaced with what's actually still live: 0007 and 0012 both still pending, both adding a template file and touching the same `README.md` copy-steps block; and a new one surfaced during this review — entry 0012's own stepwise plan pre-dates entry 0025's path-depth fix and still models its `CONTEXT.md` reference on the old `../../` pattern, so whoever implements 0012 needs to use the corrected `../../../` depth rather than the entry's literal original wording.
+
+No `template-version` or root `VERSION` bump — `docs/DEVELOPMENT.md` and the `README.md` edit are both framework-repo-only and don't travel to new products, so nothing shipped per entry `0015`'s versioning rule.
