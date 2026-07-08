@@ -16,6 +16,19 @@ Established through practice across every script in `scripts/`, stated explicitl
 - **Fail via the escalation contract, not silently.** A script hitting a genuinely blocking condition (missing dependency, ambiguous state) should point at `CRITICAL_ESCALATION.md`'s pattern rather than a bare stack trace or "command not found."
 - **Log every invocation via `trap ... EXIT`, not manual calls before each exit point.** `scripts/lib/log.sh`'s `log_invocation` is wired into every script this way (entry `0014`) so it fires exactly once regardless of which exit path a script takes — success, an early usage-error `exit 1`, or `set -e` catching an unhandled error — without needing to track down every scattered `exit` statement by hand. **Known gotcha, worth remembering:** capture `$?` into a variable as its own statement first — `trap 'EC=$?; log_invocation ... "$EC"' EXIT` — never reference `"$?"` directly inside a trap command string that also contains a command substitution like `$(basename "$0")` earlier in the same argument list. Word expansions happen left to right, and the command substitution's own exit status silently overwrites `$?` before it gets read, always logging `exit=0` regardless of what actually happened. Caught this exact bug while testing entry `0014` — a bad-usage call was logging as a success until the capture-first fix went in.
 
+## Testing this framework
+
+`tests/run_tests.sh` runs every `tests/test_*.sh` suite and reports pass/fail counts. Deliberately dependency-free — no `bats-core` or any other third-party test framework, just bash, since that's already this framework's one hard prerequisite. (`bats-core` was the original plan per entry `0030`; it couldn't be installed in the sandbox this framework was developed in — no root, no network egress to any package registry — so the fallback the entry's own plan allowed for became the actual design. In hindsight it's arguably the better fit anyway: adding `bats-core` would mean another `docs/TOOLING_MATRIX.md` entry and another Windows install question for a framework that otherwise needs nothing beyond bash.)
+
+Each `test_*.sh` builds its own scratch copy of `scripts/` + `.mwp-templates/` in a `mktemp -d` directory and runs as its own subprocess — same "test in a scratch copy, never against the committed repo directly" rule from the script conventions above, just mechanically enforced instead of manually remembered per entry.
+
+```bash
+./tests/run_tests.sh          # run every suite
+./tests/run_tests.sh tests/test_sync.sh   # run just one
+```
+
+If your change touches a behavior one of these suites already covers, run the relevant suite (or the full run) before writing that entry's Outcome section — treat a newly-broken test the same as any other test failure caught during manual verification. If your change adds a new behavior worth protecting against regression (especially anything that took real debugging to find, the way entry `0014`'s `$?`-trap bug did), add a test for it in the same entry rather than deferring it. `tests/` is framework-repo-only — it doesn't travel to new products (see `docs/evolution/0030-script-test-harness.md`), since a product repo uses this framework's scripts rather than developing them.
+
 ## Documentation map
 
 | File | Audience | What belongs here |
@@ -28,7 +41,8 @@ Established through practice across every script in `scripts/`, stated explicitl
 | `docs/FAQ.md` | Anyone with a "why does it work this way" question | Recurring meta-questions and operational lessons that don't fit neatly elsewhere. |
 | `docs/MIGRATIONS.md` | Anyone upgrading a product repo's copy of the framework | One row per MAJOR `VERSION` bump — what broke, what to do about it. See entry `0029`. |
 | `docs/evolution/` (this file's sibling, `EVOLUTION_LOG.md` + numbered entries) | Framework contributors | The append-only record of every design decision — what changed, why, and what it superseded. |
-| `docs/DEVELOPMENT.md` (this file) | Framework contributors | How to actually make a change — script conventions, doc map, adoption checklist. |
+| `docs/DEVELOPMENT.md` (this file) | Framework contributors | How to actually make a change — script conventions, doc map, adoption checklist, testing. |
+| `tests/` | Framework contributors | Dependency-free regression suite for `scripts/*.sh`. See entry `0030` and "Testing this framework" above. **Framework-repo only, does not travel.** |
 | `PROJECT_PLAN.md` | Framework contributors, historical reference | How this framework's original design decisions were made, pre-`docs/evolution/`. |
 
 ## General adoption checklist
@@ -46,16 +60,17 @@ Applies to *every* adopted entry, not just entries specifically about documentat
    - **MAJOR** — could break or silently miscopy something already scaffolded (renamed/removed template file, changed script argument behavior, changed `CONTEXT.md` contract shape, a load-bearing path/logic fix — entry `0025` would have qualified had this scheme existed then).
    This is mandatory for every adoption now, not just versioning-related ones.
 7. If the bump was MAJOR, add a row to `docs/MIGRATIONS.md` describing what changed and what a product repo on an older version must do about it. PATCH/MINOR bumps don't get a row — they're backward-compatible by definition.
-8. Revisit the "Known cross-entry collisions" list below — remove anything just resolved, add anything a newly-logged entry surfaces.
+8. If the change touches `scripts/` behavior, run `tests/run_tests.sh` (the relevant suite at minimum, the full run if unsure) before writing the Outcome section. If the entry fixes or adds a behavior worth protecting against regression, add or extend a `tests/test_*.sh` suite for it in the same entry — see "Testing this framework" above.
+9. Revisit the "Known cross-entry collisions" list below — remove anything just resolved, add anything a newly-logged entry surfaces.
 
 ## Known cross-entry collisions
 
 A living list of backlog entries that touch the same files, so they get planned around rather than each independently colliding. Revisited on every adoption per checklist step 7 above — entries move off this list once adopted and their collision is resolved.
 
-*As of 2026-07-08 (all 21 ranked backlog entries, 0001–0028, are resolved — adopted or superseded; entries 0029+ are additional, logged from external research rather than the ranked backlog):*
+*As of 2026-07-08 (all 21 ranked backlog entries, 0001–0028, are resolved — adopted or superseded; entries 0029 and 0030 are additional, logged from external research rather than the ranked backlog; nothing is currently open):*
 
-- **0030** (bats-core test harness, if/when logged) will touch every file under `scripts/` to add coverage — no behavioral edits expected, but read each script's current post-0014/0027 shape directly before writing assertions against it, same caution as every entry in this list gets. Not a collision with 0029, since 0029 touches only `VERSION`, `docs/MIGRATIONS.md`, `docs/DEVELOPMENT.md`, `README.md`, and `docs/FAQ.md` — no shared files with a test harness entry.
+- Nothing outstanding. The next entry to touch `scripts/` should run `tests/run_tests.sh` first (entry 0030) to establish a known-good baseline before editing, in addition to reading each script's current state directly as every entry in this list already advises.
 
-*Resolved and removed from this list since the entry was first logged:* 0018 and 0012 both editing all six stage `CONTEXT.md` templates (both landed) · 0003/0016 sharing `features/*/` scan logic (both landed, factored into `scripts/lib/scan_features.sh`) · 0016's last-sync column depending on 0009's `SYNC_LOG.md` (0009 landed first) · 0007/0012 both touching the same `README.md` copy-steps block (both landed sequentially without conflict) · 0012's stepwise plan pre-dating entry 0025's path-depth fix (resolved differently than originally expected — see `docs/evolution/0012-shared-learnings-file.md`'s Outcome) · 0014 touching every script in `scripts/` (landed; `sync.sh`/`pivot.sh`'s post-0012 shape was read directly rather than assumed, as this list itself had flagged) · 0027 (`scaffold.sh --sprint` dead-weight `FEATURE_META.md`, resolved by skipping creation for sprint mode).
+*Resolved and removed from this list since the entry was first logged:* 0018 and 0012 both editing all six stage `CONTEXT.md` templates (both landed) · 0003/0016 sharing `features/*/` scan logic (both landed, factored into `scripts/lib/scan_features.sh`) · 0016's last-sync column depending on 0009's `SYNC_LOG.md` (0009 landed first) · 0007/0012 both touching the same `README.md` copy-steps block (both landed sequentially without conflict) · 0012's stepwise plan pre-dating entry 0025's path-depth fix (resolved differently than originally expected — see `docs/evolution/0012-shared-learnings-file.md`'s Outcome) · 0014 touching every script in `scripts/` (landed; `sync.sh`/`pivot.sh`'s post-0012 shape was read directly rather than assumed, as this list itself had flagged) · 0027 (`scaffold.sh --sprint` dead-weight `FEATURE_META.md`, resolved by skipping creation for sprint mode) · 0029/0030 both touching `docs/DEVELOPMENT.md` and `README.md`'s file tables (landed sequentially, in the same session, without conflict — 0030 read 0029's just-written state directly before editing).
 
 <!-- Not versioned via template-version — this file is framework-repo-only and doesn't travel to new products, but IS covered by an evolution-entry outcome each time it's updated. -->

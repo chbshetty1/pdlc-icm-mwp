@@ -1,8 +1,8 @@
 # 0025 — Audit: Stage `CONTEXT.md` "Back to Root" Relative Paths May Be One Level Short
 
 - **Date:** 2026-07-08
-- **Status:** proposed
-- **Priority:** unranked — surfaced as a side-finding while implementing entry 0008, not yet slotted into the backlog ordering.
+- **Status:** adopted (2026-07-08)
+- **Priority:** ranked 12 of 20 by entry `0026`'s unified backlog re-prioritization.
 
 ## Problem
 
@@ -36,3 +36,15 @@ Before editing anything, confirm the depth count against how an agent actually o
 ## What happens if adopted
 
 Fixes a documentation-accuracy gap that could cost a human or agent real time hunting for a file at a wrong path, especially for a newcomer to the framework who hasn't yet built the instinct to just `ls ../..` and self-correct. Low urgency (nothing has broken loudly from it yet) but low cost to fix once confirmed.
+
+## Outcome (2026-07-08)
+
+All 5 steps executed:
+
+1. Investigated rather than assuming: read `docs/CLAUDE_WORKFLOW_PLAYBOOK.md`'s modality map and `scripts/scaffold.sh`'s actual directory creation (`$ROOT_DIR/features/$NAME/$stage/`, confirmed 3 levels below product root). The "stage folder is cwd" framing turned out to be the right reference point regardless of surface: Claude Code CLI (stages 05–06) genuinely `cd`s in, while Chat/Cowork (stages 01–04) don't have a literal shell cwd since content is pasted or read via absolute-path tools — but the relative-path *text* is still authored and interpreted as "measured from the stage folder," so the same depth count applies either way. Direct corroborating evidence found in the wild: stage 01's own `CONTEXT.md`, after entry 0008's edit, already had two different depths for two different product-root references in the same file — `../../.mwp/GLOBAL_CONTEXT.md` (2 levels, the old pattern) sitting right above `../../../LESSONS_LEARNED.md` (3 levels, arithmetically correct) — an inconsistency that couldn't both be right.
+2. All 6 stage `CONTEXT.md` files updated: `../../` → `../../../` for every product-root reference — `GLOBAL_CONTEXT.md` (stages 01–04), `CRITICAL_ESCALATION.md` (all 6, except stage 06 which has no "On failure" escalation reference), `CLAUDE_WORKFLOW_PLAYBOOK.md` (stage 04), `pivot.sh` (stage 06).
+3. `template-version` bumped on all 6 touched files (01: 3→4, 02: 2→3, 03: 2→3, 04: 2→3, 05: 2→3, 06: 2→3). Root `VERSION` bumped 9→10.
+4. Spot-checked in a sandbox scaffold mimicking the real directory structure (`features/FEAT-test/<stage>/`): `cd`'d into stages 01, 04, and 06 and resolved every corrected path with `ls` — all 6 references landed on the right file.
+5. This FAQ note is added in the same commit as this outcome — see `docs/FAQ.md`.
+
+**Note on scope:** stage 01's `LESSONS_LEARNED.md` reference (added by entry 0008, already at the correct 3-level depth) was left untouched — only the 2-level references needed correcting.

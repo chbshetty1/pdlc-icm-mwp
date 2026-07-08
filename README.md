@@ -29,7 +29,8 @@ The optional per-stage tools (Fabric, Graphify, Repomix, Mermaid CLI, DuckDB, Ob
 | `VERSION` | `MAJOR.MINOR.PATCH`, bumped whenever an adopted change ships to `.mwp-templates/`, `scripts/`, or `CLAUDE.md` — tier chosen per entry `0029`'s rules (patch = doc wording only, minor = backward-compatible addition, major = could break something already scaffolded). Tells a product repo what point in this framework's history it started from — not whether it's current. Check `docs/MIGRATIONS.md` if the major number is behind. **Travels with new products.** |
 | `PROJECT_PLAN.md` | Planning history — how this framework's design decisions were made. **Framework-repo only, does not travel.** |
 | `docs/evolution/` | Append-only log of this framework template's own design analyses, critiques, and changes — see `EVOLUTION_LOG.md` for the convention. **Framework-repo only, does not travel** (the convention is reusable for your own product if you want it — the specific entries aren't). |
-| `docs/DEVELOPMENT.md` | How to develop *this framework itself* — change process, script conventions, doc map, adoption checklist, known cross-entry collisions. **Framework-repo only, does not travel.** |
+| `docs/DEVELOPMENT.md` | How to develop *this framework itself* — change process, script conventions, doc map, adoption checklist, known cross-entry collisions, testing. **Framework-repo only, does not travel.** |
+| `tests/` | Dependency-free bash test harness (`run_tests.sh` + `test_*.sh` suites, no `bats-core`) covering `scripts/*.sh` — regression protection for previously-documented gotchas (e.g. entry `0014`'s `$?`-trap bug) plus smoke coverage for the rest. See `docs/evolution/0030-script-test-harness.md`. **Framework-repo only, does not travel.** |
 
 ## Core design
 
