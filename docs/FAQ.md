@@ -45,6 +45,8 @@ A related but distinct issue from the git corruption above, discovered while tes
 
 The workaround that worked: write the file's exact current contents directly into the sandbox's own scratch space (not copied through the live mount) and test from there. If a test result from Claude's sandbox looks wrong immediately after an edit — truncated output, a script behaving like an older version — this mount staleness is worth suspecting before assuming the code itself is broken. See `docs/evolution/0003-computed-priority-registry.md`'s Outcome section.
 
+**Not just tied to recent edits, either.** While testing entry `0006` (`--sprint` mode), `registry.sh` — a file untouched that entire session — came back truncated via a fresh `cp` from the mount, right after two other, recently-edited scripts had already hit the same issue. So the staleness isn't reliably correlated with "this file was just edited"; any file read through the live mount mid-session is worth verifying (`wc -l` / `tail` against what a direct `Read` already showed) before trusting a test result built on it, not just ones edited a moment ago.
+
 ## Why couldn't Claude test `scripts/preflight.ps1` itself, the way it tested the bash scripts?
 
 Claude's sandbox is Linux, with no PowerShell installed at all (confirmed: `pwsh` isn't available) — unlike the bash scripts, where the sandbox is at least a partial stand-in even though real verification still happens on the actual machine per entry `0002`. For a `.ps1` file there's no fallback: it can only be written, never run, inside this environment. Any PowerShell-only tooling this framework adds (entry `0023` is the first) will always need its actual testing done on a real Windows machine, with Claude only able to review the script by reading it and reasoning about correctness, not executing it.
@@ -95,6 +97,12 @@ No auto-install by default. Installing software is a bigger side effect than any
 ## Does the framework support configurable logging (log levels, per-stage verbosity)?
 
 No, deliberately. What exists (once entry `0014` is implemented) is a single always-on operational log — one line per script invocation, no levels, no per-stage config — because a configurable logging subsystem is exactly the kind of machinery entry `0001`'s first-principles analysis already flagged as the "coordination requires software" dogma this framework rejects. It would also add more surface area that context-bundling tools (Repomix, Graphify) have to be told to ignore, and a shared config file editable by multiple features risks becoming the same class of coordination-cost problem entry `0003` is trying to fix for the priority registry. See `docs/evolution/0014-minimal-operational-log.md`.
+
+## Can I `--pivot` a sprint the same way I can pivot a feature?
+
+No, and this is deliberate, not a gap — `scripts/pivot.sh` is hardcoded to look inside `features/`, and running it against a sprint name fails immediately (`Error: .../features/SPRINT-xxx not found`), confirmed by testing it directly. The reason isn't an oversight: Pivot/Persevere is Lean's response to a single falsifiable hypothesis being tested by one Micro-PDLC feature. A sprint under Agile-PDLC is a shared, time-boxed batch — there's no single riskiest assumption a whole sprint is testing, so "pivot the sprint" doesn't have a clean meaning the way "pivot the feature" does. `--sprint` mode is otherwise fully verified: `scaffold.sh --sprint` produces the identical 6-stage structure and correct `CONTEXT.md` substitution as `--feature` mode, and both `sync.sh` and `compact.sh` work against a sprint path unchanged (they already take a generic workspace path, not a feature-specific one). See `docs/evolution/0006-test-sprint-mode.md`.
+
+That same testing pass did surface one real, unrelated gap: `scaffold.sh --sprint` still creates a `FEATURE_META.md` (C-V-R scoring fields) that `registry.sh` — hardcoded to scan `features/` only — silently never reads, while `scaffold.sh`'s own printed instructions misleadingly tell a sprint user to fill it in and score it. Logged as entry `0027`, not yet fixed.
 
 ## Is the framework itself versioned? Are individual stages versioned?
 
