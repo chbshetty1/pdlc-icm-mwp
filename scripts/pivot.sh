@@ -38,6 +38,48 @@ extract_summary() {
   echo "$line"
 }
 
+# --- Learnings capture for stage 06 (entry 0012) ---
+# sync.sh folds Learnings_Note.md into LEARNINGS.md at every 01->06
+# transition, but stage 06 is terminal -- nothing ever syncs it forward.
+# pivot.sh is the script actually invoked at the end of stage 06 either way
+# (--persevere or --pivot), so it's the right place to close that gap.
+# Same logic as sync.sh's block; duplicated rather than factored into a
+# shared lib for a block this small (see docs/DEVELOPMENT.md's script
+# conventions on scratch-testing, not premature abstraction).
+fold_learnings_note() {
+  local note="$FEATURE_DIR/06_validation_gtm/outputs/Learnings_Note.md"
+  [ -f "$note" ] || return 0
+  local learnings_file="$ROOT_DIR/LEARNINGS.md"
+  if [ ! -f "$learnings_file" ]; then
+    if [ -f "$ROOT_DIR/.mwp-templates/LEARNINGS.template.md" ]; then
+      cp "$ROOT_DIR/.mwp-templates/LEARNINGS.template.md" "$learnings_file"
+    else
+      cat > "$learnings_file" <<'EOF'
+# Learnings
+
+Append-only register of incidental discoveries. Populated automatically by
+scripts/sync.sh (and scripts/pivot.sh for stage 06) from each stage's
+Learnings_Note.md; never hand-edit a past row.
+
+| Date | Feature | Discovery |
+|---|---|---|
+EOF
+    fi
+  fi
+  local added=0 line
+  while IFS= read -r line; do
+    [[ "$line" =~ ^[[:space:]]*#.*$ ]] && continue
+    [[ "$line" =~ ^[[:space:]]*$ ]] && continue
+    line="${line//|/\\|}"
+    if [ "${#line}" -gt 150 ]; then
+      line="${line:0:147}..."
+    fi
+    echo "| $(date '+%Y-%m-%d') | $FEATURE_NAME | $line |" >> "$learnings_file"
+    added=$((added + 1))
+  done < "$note"
+  [ "$added" -gt 0 ] && echo "Folded $added discovery line(s) from $note into $learnings_file."
+}
+
 case "$ACTION" in
   --pivot)
     echo "Hypothesis invalidated for $FEATURE_NAME. Archiving learnings, purging workspace..."
@@ -51,6 +93,10 @@ case "$ACTION" in
     # chance to distill it before it's gone for good.
     ASSUMPTION="$(extract_summary "$ARCHIVE_DIR/01_discovery_ideation/outputs/Riskiest_Assumption.md" "no Riskiest_Assumption.md found -- summary incomplete")"
     WHY_FAILED="$(extract_summary "$FEATURE_DIR/06_validation_gtm/outputs/Validation_Report.md" "no Validation_Report.md -- pivoted before stage 06")"
+
+    # Same reasoning as the Validation_Report.md read above: fold in stage
+    # 06's Learnings_Note.md (if any) before the rm -rf below purges it.
+    fold_learnings_note
 
     LESSONS_FILE="$ROOT_DIR/LESSONS_LEARNED.md"
     if [ ! -f "$LESSONS_FILE" ]; then
@@ -79,6 +125,7 @@ EOF
     echo "Remember to update its Status to PIVOTED in .mwp/FEATURE_PRIORITY_REGISTRY.md."
     ;;
   --persevere)
+    fold_learnings_note
     echo "$FEATURE_NAME persevered. No files changed; proceed to the next stage or ship."
     ;;
   *)

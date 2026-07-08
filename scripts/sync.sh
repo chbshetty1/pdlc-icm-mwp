@@ -116,6 +116,49 @@ mkdir -p "$TO_IN"
 cp -r "$FROM_OUT"/. "$TO_IN"/
 echo "Synced $FROM_OUT -> $TO_IN"
 
+# --- Learnings capture (entry 0012) ---
+# A stage never writes LEARNINGS.md directly (it's outside that stage's
+# outputs/, and no stage's write scope has an exception for this the way
+# READ ONLY scope does) -- instead it leaves a plain-text
+# outputs/Learnings_Note.md, one discovery per line, and this script folds
+# each non-empty, non-comment line into <product-root>/LEARNINGS.md as a
+# table row. Same division of responsibility pivot.sh already has for
+# LESSONS_LEARNED.md: the agent stays inside its stage; the script performs
+# the actual cross-boundary write. See docs/evolution/0012-shared-learnings-file.md.
+LEARNINGS_NOTE="$FROM_OUT/Learnings_Note.md"
+if [ -f "$LEARNINGS_NOTE" ]; then
+  LEARNINGS_FILE="$ROOT_DIR/LEARNINGS.md"
+  if [ ! -f "$LEARNINGS_FILE" ]; then
+    if [ -f "$ROOT_DIR/.mwp-templates/LEARNINGS.template.md" ]; then
+      cp "$ROOT_DIR/.mwp-templates/LEARNINGS.template.md" "$LEARNINGS_FILE"
+    else
+      cat > "$LEARNINGS_FILE" <<'EOF'
+# Learnings
+
+Append-only register of incidental discoveries. Populated automatically by
+scripts/sync.sh (and scripts/pivot.sh for stage 06) from each stage's
+Learnings_Note.md; never hand-edit a past row.
+
+| Date | Feature | Discovery |
+|---|---|---|
+EOF
+    fi
+  fi
+  FEATURE_NAME="$(basename "$WORKSPACE")"
+  ADDED=0
+  while IFS= read -r line; do
+    [[ "$line" =~ ^[[:space:]]*#.*$ ]] && continue
+    [[ "$line" =~ ^[[:space:]]*$ ]] && continue
+    line="${line//|/\\|}"
+    if [ "${#line}" -gt 150 ]; then
+      line="${line:0:147}..."
+    fi
+    echo "| $(date '+%Y-%m-%d') | $FEATURE_NAME | $line |" >> "$LEARNINGS_FILE"
+    ADDED=$((ADDED + 1))
+  done < "$LEARNINGS_NOTE"
+  [ "$ADDED" -gt 0 ] && echo "Folded $ADDED discovery line(s) from $LEARNINGS_NOTE into $LEARNINGS_FILE."
+fi
+
 # --- Sync audit trail (entry 0009) ---
 # Lightweight paper trail, not an auth system: one line per successful sync.
 SYNC_LOG="$WORKSPACE/SYNC_LOG.md"

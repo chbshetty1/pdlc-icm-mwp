@@ -24,6 +24,7 @@ Write the minimum code and tests to satisfy the specs and architecture — nothi
 - Passing tests in `./tests/`
 - `./outputs/Dev_Summary.md` — what was built, what was deliberately left out per Lean scope.
 - `./outputs/Context_Manifest.md` — every file this stage actually read (paths only), self-reported, for human cross-check against this contract's declared READ ONLY scope (see `CRITICAL_ESCALATION.md`).
+- If you discover something outside this feature's own scope that a future feature would benefit from knowing, add a one-line note to `./outputs/Learnings_Note.md` (plain text, one discovery per line) — `sync.sh` folds it into the product's `LEARNINGS.md` automatically when this stage's outputs sync forward. Never write to `LEARNINGS.md` directly from this stage.
 
 ## 5. Token guardrails
 
@@ -31,6 +32,6 @@ Write the minimum code and tests to satisfy the specs and architecture — nothi
 
 ## 6. On failure
 
-If tests fail twice consecutively after fix attempts, stop. Write `BLOCKED_REASON.md` per `../../.mwp-templates/CRITICAL_ESCALATION.md` with the failing test output attached. Do not attempt a third fix unattended.
+If tests fail twice consecutively after fix attempts, stop. Write `BLOCKED_REASON.md` per `../../../.mwp-templates/CRITICAL_ESCALATION.md` with the failing test output attached. Do not attempt a third fix unattended.
 
-<!-- template-version: 2 -->
+<!-- template-version: 4 -->

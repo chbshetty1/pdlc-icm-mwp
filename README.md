@@ -71,8 +71,11 @@ cp ../"PDLC - ICM-MWP"/docs/CONSTRAINTS.md ./docs/
 mkdir -p ./docs/evolution
 cp .mwp-templates/PRODUCT_EVOLUTION_LOG_TEMPLATE.md ./docs/evolution/EVOLUTION_LOG.md
 
-# 5. Write your product's global context
+# 5. Write your product's global context, and set up the incidental-
+# learnings register alongside it (append-only, distinct from
+# GLOBAL_CONTEXT.md's deliberate constraints — see LEARNINGS.md's own header)
 cp .mwp-templates/GLOBAL_CONTEXT.template.md .mwp/GLOBAL_CONTEXT.md
+cp .mwp-templates/LEARNINGS.template.md ./LEARNINGS.md
 # edit .mwp/GLOBAL_CONTEXT.md with your real stack, product name, constraints
 
 # 6. Set up the lessons-learned register (pivot.sh will also self-create this

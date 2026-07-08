@@ -7,8 +7,9 @@ Synthesize raw, unstructured input (interviews, notes, market data) into a singl
 ## 2. Input scope
 
 - READ ONLY: local files in `./inputs/`
-- READ ONLY: `../../.mwp/GLOBAL_CONTEXT.md`
+- READ ONLY: `../../../.mwp/GLOBAL_CONTEXT.md`
 - READ ONLY (if present): `../../../LESSONS_LEARNED.md` — the product's running register of already-disproven hypotheses from pivoted features.
+- READ ONLY (optional, if present): `../../../LEARNINGS.md` — incidental discoveries from other features (rate limits, library quirks) worth knowing before starting discovery.
 
 ## 3. Execution rules
 
@@ -22,6 +23,7 @@ Synthesize raw, unstructured input (interviews, notes, market data) into a singl
 - `./outputs/Riskiest_Assumption.md` — the assumption, why it's risky, and what evidence would confirm/deny it.
 - `./outputs/Problem_Statement.md` — 3-5 sentences max.
 - `./outputs/Context_Manifest.md` — every file this stage actually read (paths only), self-reported, for human cross-check against this contract's declared READ ONLY scope (see `CRITICAL_ESCALATION.md`).
+- If you discover something outside this feature's own scope that a future feature would benefit from knowing, add a one-line note to `./outputs/Learnings_Note.md` (plain text, one discovery per line) — `sync.sh` folds it into the product's `LEARNINGS.md` automatically when this stage's outputs sync forward. Never write to `LEARNINGS.md` directly from this stage.
 
 ## 5. Token guardrails
 
@@ -30,6 +32,6 @@ Synthesize raw, unstructured input (interviews, notes, market data) into a singl
 
 ## 6. On failure
 
-If two consecutive attempts fail to produce a falsifiable assumption, write `./outputs/BLOCKED_REASON.md` per `../../.mwp-templates/CRITICAL_ESCALATION.md` and stop.
+If two consecutive attempts fail to produce a falsifiable assumption, write `./outputs/BLOCKED_REASON.md` per `../../../.mwp-templates/CRITICAL_ESCALATION.md` and stop.
 
-<!-- template-version: 3 -->
+<!-- template-version: 5 -->
