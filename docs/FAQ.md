@@ -84,6 +84,14 @@ git push --force-with-lease --set-upstream origin main
 
 `--force-with-lease` is safer than plain `--force` — it double-checks the remote hasn't changed unexpectedly since your last fetch before overwriting anything.
 
+## `git status` shows dozens of files as modified right after a clean pull or checkout on Windows, even though I haven't touched them — why?
+
+This happened in this repo's own history: after landing entries `0038`–`0041`, `git status` listed roughly 60 unrelated, untouched files (`CLAUDE.md`, `LICENSE`, most of `docs/evolution/`, several `scripts/lib/*.sh` and `tests/test_*.sh` files) as modified, and `git pull --rebase` refused to proceed because of them. The first two things that looked like the obvious cause weren't it: `git config core.autocrlf false` changed nothing, and `git restore .` changed nothing either — the exact same file list came back immediately after.
+
+The actual cause only showed up by reading real diff content instead of just `--stat` counts (`git diff -- CLAUDE.md | head`): every flagged file's diff was purely `old mode 100755` / `new mode 100644` — a Unix executable-bit mismatch, not a content or line-ending change at all. This repo has a number of files committed with the Unix executable bit set; Git for Windows / MSYS2 doesn't reliably reproduce that bit on checkout, so `git status` compares the working tree's mode against the committed mode and reports every one of them as "modified" even though the bytes are identical. The CRLF warnings Git prints alongside (`warning: LF will be replaced by CRLF...`) are unrelated boilerplate in this case — easy to misread as the cause, since they show up on the same files.
+
+Fix: `git config core.fileMode false` (local to the repo, not global) — tells git to stop comparing/tracking the executable bit for this repo entirely. `git status` clears immediately, with no `git restore` or re-clone needed. Worth knowing this is a distinct setting from `core.autocrlf`: autocrlf controls line-ending conversion, fileMode controls whether permission-bit changes count as a diff — fixing one doesn't touch the other, and it's easy to chase the wrong one first given how similar the symptoms look at a glance.
+
 ## Which docs travel with a new product built from this framework, and which stay behind?
 
 **Travels:** `docs/FAQ.md`, `docs/CLAUDE_WORKFLOW_PLAYBOOK.md`, `docs/PRIORITIZATION_GUIDE.md`, `docs/TOOLING_MATRIX.md`, `docs/CONSTRAINTS.md` — these are reference material a product team actually needs day-to-day, regardless of which product they're building. The README's "Using this framework for a new product" copy commands include them.
