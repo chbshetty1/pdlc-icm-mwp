@@ -27,7 +27,7 @@ If a stage's validation or test step fails twice consecutively, stop. Write `BLO
 
 ## FAQ capture
 
-If a conversation in this repo produces a reusable question-and-answer about how the framework works — not specific to a single feature, commit, or one-off bug — append it to `docs/FAQ.md` using the existing Q&A format (one `##` heading per question, a direct prose answer). Do this proactively, without being asked, at the point the exchange resolves; don't wait to be told to document it. Mention what you added at the end of your response so it doesn't go unnoticed. Skip anything already covered there, or anything genuinely specific to one feature's implementation.
+If a conversation in this repo produces a reusable question-and-answer about how this repo/system works — the framework's own mechanics if this is the framework template repo, or this product's architecture/behavior if this is a product workspace built from it — append it to `docs/FAQ.md` using the existing Q&A format (one `##` heading per question, a direct prose answer). Do this proactively, without being asked, at the point the exchange resolves; don't wait to be told to document it. Mention what you added at the end of your response so it doesn't go unnoticed. Skip anything already covered there, or anything genuinely specific to one feature's implementation.
 
 This applies whether you're running as Claude Code CLI or the VS Code extension — both read this file as project instructions the same way, as long as you're working inside this repo (or a product repo copied from it, which carries its own `docs/FAQ.md`).
 
