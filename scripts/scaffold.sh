@@ -51,6 +51,9 @@ done
 mkdir -p "$TARGET_DIR/05_development_test/src" "$TARGET_DIR/05_development_test/tests"
 mkdir -p "$TARGET_DIR/06_validation_gtm/validation_data" "$TARGET_DIR/06_validation_gtm/design_artifacts"
 
+# Resolved BLOCKED_REASON.md files are always archived here, never deleted — see docs/evolution/0010-archive-not-delete-escalations.md
+mkdir -p "$TARGET_DIR/.escalations_archive"
+
 if [ -f "$TEMPLATES_DIR/FEATURE_META.template.md" ]; then
   sed "s/{{FEATURE_NAME}}/$NAME/g" "$TEMPLATES_DIR/FEATURE_META.template.md" > "$TARGET_DIR/FEATURE_META.md"
 else

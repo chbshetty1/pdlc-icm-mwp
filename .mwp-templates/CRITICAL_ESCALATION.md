@@ -33,7 +33,7 @@ Every stage `CONTEXT.md` references this file under "On failure." When triggered
 
 ## Human resolution
 
-A human reviews `BLOCKED_REASON.md` in Obsidian, resolves the underlying issue (edits an upstream file, makes an architectural call, adjusts scope), deletes or archives the `BLOCKED_REASON.md`, and re-runs the stage. This file existing in `outputs/` is itself the signal that a stage is paused — automation should treat its presence as a hard stop.
+A human reviews `BLOCKED_REASON.md` in Obsidian, resolves the underlying issue (edits an upstream file, makes an architectural call, adjusts scope), moves the resolved `BLOCKED_REASON.md` to `<feature_root>/.escalations_archive/` — **never deletes it** — and re-runs the stage. This file existing in `outputs/` is itself the signal that a stage is paused — automation should treat its presence as a hard stop. `.escalations_archive/` is a plain accumulating folder (`scaffold.sh` creates it empty at feature setup); nothing auto-prunes it, and it's excluded from `repomix`/`graphify` bundling the same way the rest of a feature's non-source folders are (see `docs/evolution/0010-archive-not-delete-escalations.md`).
 
 ## Context Manifest cross-check
 
@@ -43,4 +43,4 @@ Every stage's `outputs/` also includes a self-reported `Context_Manifest.md` (ev
 
 See `docs/evolution/0018-scope-containment-verification.md`.
 
-<!-- template-version: 2 -->
+<!-- template-version: 3 -->
