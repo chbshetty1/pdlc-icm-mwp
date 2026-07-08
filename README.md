@@ -23,9 +23,10 @@ The optional per-stage tools (Fabric, Graphify, Repomix, Mermaid CLI, DuckDB, Ob
 | `docs/TOOLING_MATRIX.md` | Free/open-source tool stack. **Travels with new products.** |
 | `docs/CONSTRAINTS.md` | Every framework-level non-negotiable in one place (scope containment, no auto-install, no alerting, escalation rules, etc.), each with a reason and a pointer to where it's actually enforced. **Travels with new products.** |
 | `docs/FAQ.md` | Answers to recurring meta-questions (is Claude required, can the framework develop itself, is that a PDLC, git/repo operational lessons). **Travels with new products.** |
+| `docs/MIGRATIONS.md` | One row per MAJOR `VERSION` bump — what broke, what a product repo on an older version needs to do about it. See `docs/evolution/0029-tiered-version-scheme.md`. **Travels with new products.** |
 | `hooks/post-commit` | Sample git hook a product repo can adopt to auto-refresh Graphify/Repomix on relevant commits. |
 | `CLAUDE.md` | Root automation-routing rules Claude Code reads when working inside a product workspace built from this template. |
-| `VERSION` | Plain incrementing number, bumped whenever an adopted change ships to `.mwp-templates/`, `scripts/`, or `CLAUDE.md`. Tells a product repo what point in this framework's history it started from — not whether it's current. **Travels with new products.** |
+| `VERSION` | `MAJOR.MINOR.PATCH`, bumped whenever an adopted change ships to `.mwp-templates/`, `scripts/`, or `CLAUDE.md` — tier chosen per entry `0029`'s rules (patch = doc wording only, minor = backward-compatible addition, major = could break something already scaffolded). Tells a product repo what point in this framework's history it started from — not whether it's current. Check `docs/MIGRATIONS.md` if the major number is behind. **Travels with new products.** |
 | `PROJECT_PLAN.md` | Planning history — how this framework's design decisions were made. **Framework-repo only, does not travel.** |
 | `docs/evolution/` | Append-only log of this framework template's own design analyses, critiques, and changes — see `EVOLUTION_LOG.md` for the convention. **Framework-repo only, does not travel** (the convention is reusable for your own product if you want it — the specific entries aren't). |
 | `docs/DEVELOPMENT.md` | How to develop *this framework itself* — change process, script conventions, doc map, adoption checklist, known cross-entry collisions. **Framework-repo only, does not travel.** |
@@ -53,8 +54,13 @@ cp ../"PDLC - ICM-MWP"/VERSION ./VERSION
 # The root VERSION file and each .mwp-templates/ file's `template-version`
 # comment travel with this copy. They tell you what point in the framework's
 # history you started from — not whether you're still current. There's no
-# tooling yet that checks your copy against a newer framework version; that's
-# a manual diff for now (see docs/evolution/0015-framework-and-template-versioning.md).
+# automated tooling yet that checks your copy against a newer framework
+# version, but VERSION is now tiered (MAJOR.MINOR.PATCH, see
+# docs/evolution/0029-tiered-version-scheme.md): if only the framework's
+# minor/patch numbers moved since you copied, it's safe to skip straight to
+# latest. If the major number moved, read docs/MIGRATIONS.md first — every
+# breaking change gets a row there (see docs/evolution/0015-framework-and-template-versioning.md
+# for why versioning exists at all).
 
 # 3. Copy the reference docs a product team actually needs day-to-day
 mkdir -p ./docs
@@ -63,6 +69,7 @@ cp ../"PDLC - ICM-MWP"/docs/CLAUDE_WORKFLOW_PLAYBOOK.md ./docs/
 cp ../"PDLC - ICM-MWP"/docs/PRIORITIZATION_GUIDE.md ./docs/
 cp ../"PDLC - ICM-MWP"/docs/TOOLING_MATRIX.md ./docs/
 cp ../"PDLC - ICM-MWP"/docs/CONSTRAINTS.md ./docs/
+cp ../"PDLC - ICM-MWP"/docs/MIGRATIONS.md ./docs/
 
 # 4. Set up this product's own evolution log (its architecture/decision
 # history — separate from the framework's own docs/evolution/, which stays

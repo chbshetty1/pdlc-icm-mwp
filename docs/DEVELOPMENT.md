@@ -26,6 +26,7 @@ Established through practice across every script in `scripts/`, stated explicitl
 | `docs/TOOLING_MATRIX.md` | Anyone setting up the optional tool stack | Per-stage tool list, verified install commands. |
 | `docs/CONSTRAINTS.md` | Anyone extending or auditing the framework | Every hard non-negotiable rule, why it exists, where it's enforced. |
 | `docs/FAQ.md` | Anyone with a "why does it work this way" question | Recurring meta-questions and operational lessons that don't fit neatly elsewhere. |
+| `docs/MIGRATIONS.md` | Anyone upgrading a product repo's copy of the framework | One row per MAJOR `VERSION` bump — what broke, what to do about it. See entry `0029`. |
 | `docs/evolution/` (this file's sibling, `EVOLUTION_LOG.md` + numbered entries) | Framework contributors | The append-only record of every design decision — what changed, why, and what it superseded. |
 | `docs/DEVELOPMENT.md` (this file) | Framework contributors | How to actually make a change — script conventions, doc map, adoption checklist. |
 | `PROJECT_PLAN.md` | Framework contributors, historical reference | How this framework's original design decisions were made, pre-`docs/evolution/`. |
@@ -39,17 +40,22 @@ Applies to *every* adopted entry, not just entries specifically about documentat
 3. If a new script or doc file was created, add it to `README.md`'s file table.
 4. If user-facing behavior changed (a script's output, a template's contract), check whether `docs/FAQ.md` needs a new or updated entry.
 5. If a new non-negotiable rule was established (or an existing one changed), update `docs/CONSTRAINTS.md`.
-6. Bump versions per entry `0015`'s system: `template-version` on any touched `.mwp-templates/` file, and root `VERSION` on any change shipped to `.mwp-templates/`, `scripts/`, `CLAUDE.md`, or a doc marked "Travels with new products." This is mandatory for every adoption now, not just versioning-related ones.
-7. Revisit the "Known cross-entry collisions" list below — remove anything just resolved, add anything a newly-logged entry surfaces.
+6. Bump versions per entry `0015`'s system (tiered per entry `0029`): `template-version` on any touched `.mwp-templates/` file, and root `VERSION` — `MAJOR.MINOR.PATCH` — on any change shipped to `.mwp-templates/`, `scripts/`, `CLAUDE.md`, or a doc marked "Travels with new products." Pick the tier honestly, don't default to the smallest:
+   - **PATCH** — doc-only wording/typo/comment fixes, zero behavioral or structural effect on an already-scaffolded product.
+   - **MINOR** — backward-compatible additions (new optional script flag, new template file, new FAQ entry, new optional `CONTEXT.md` reference). Nothing already scaffolded breaks by staying on an older minor version.
+   - **MAJOR** — could break or silently miscopy something already scaffolded (renamed/removed template file, changed script argument behavior, changed `CONTEXT.md` contract shape, a load-bearing path/logic fix — entry `0025` would have qualified had this scheme existed then).
+   This is mandatory for every adoption now, not just versioning-related ones.
+7. If the bump was MAJOR, add a row to `docs/MIGRATIONS.md` describing what changed and what a product repo on an older version must do about it. PATCH/MINOR bumps don't get a row — they're backward-compatible by definition.
+8. Revisit the "Known cross-entry collisions" list below — remove anything just resolved, add anything a newly-logged entry surfaces.
 
 ## Known cross-entry collisions
 
 A living list of backlog entries that touch the same files, so they get planned around rather than each independently colliding. Revisited on every adoption per checklist step 7 above — entries move off this list once adopted and their collision is resolved.
 
-*As of 2026-07-08 (post entries 0002–0018, 0020, 0023, 0025 all adopted; entry 0027 is the only item left in the backlog, unranked pending its own re-prioritization pass):*
+*As of 2026-07-08 (all 21 ranked backlog entries, 0001–0028, are resolved — adopted or superseded; entries 0029+ are additional, logged from external research rather than the ranked backlog):*
 
-- **0027** (`scaffold.sh --sprint` creates a dead-weight `FEATURE_META.md`) is the sole remaining entry. No known collisions yet — its two candidate resolutions (skip `FEATURE_META.md` creation for sprints, or make `registry.sh` sprint-aware) touch `scaffold.sh` and/or `registry.sh` respectively, both of which just gained `trap ... EXIT` logging calls from entry 0014 — read their current state directly before editing, same caution as every entry in this list gets.
+- **0030** (bats-core test harness, if/when logged) will touch every file under `scripts/` to add coverage — no behavioral edits expected, but read each script's current post-0014/0027 shape directly before writing assertions against it, same caution as every entry in this list gets. Not a collision with 0029, since 0029 touches only `VERSION`, `docs/MIGRATIONS.md`, `docs/DEVELOPMENT.md`, `README.md`, and `docs/FAQ.md` — no shared files with a test harness entry.
 
-*Resolved and removed from this list since the entry was first logged:* 0018 and 0012 both editing all six stage `CONTEXT.md` templates (both landed) · 0003/0016 sharing `features/*/` scan logic (both landed, factored into `scripts/lib/scan_features.sh`) · 0016's last-sync column depending on 0009's `SYNC_LOG.md` (0009 landed first) · 0007/0012 both touching the same `README.md` copy-steps block (both landed sequentially without conflict) · 0012's stepwise plan pre-dating entry 0025's path-depth fix (resolved differently than originally expected — see `docs/evolution/0012-shared-learnings-file.md`'s Outcome) · 0014 touching every script in `scripts/` (landed; `sync.sh`/`pivot.sh`'s post-0012 shape was read directly rather than assumed, as this list itself had flagged).
+*Resolved and removed from this list since the entry was first logged:* 0018 and 0012 both editing all six stage `CONTEXT.md` templates (both landed) · 0003/0016 sharing `features/*/` scan logic (both landed, factored into `scripts/lib/scan_features.sh`) · 0016's last-sync column depending on 0009's `SYNC_LOG.md` (0009 landed first) · 0007/0012 both touching the same `README.md` copy-steps block (both landed sequentially without conflict) · 0012's stepwise plan pre-dating entry 0025's path-depth fix (resolved differently than originally expected — see `docs/evolution/0012-shared-learnings-file.md`'s Outcome) · 0014 touching every script in `scripts/` (landed; `sync.sh`/`pivot.sh`'s post-0012 shape was read directly rather than assumed, as this list itself had flagged) · 0027 (`scaffold.sh --sprint` dead-weight `FEATURE_META.md`, resolved by skipping creation for sprint mode).
 
 <!-- Not versioned via template-version — this file is framework-repo-only and doesn't travel to new products, but IS covered by an evolution-entry outcome each time it's updated. -->
