@@ -9,6 +9,12 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$SCRIPT_DIR/lib/log.sh"
 trap 'LOG_EXIT_CODE=$?; log_invocation "$ROOT_DIR" "$(basename "$0")" "$*" "$LOG_EXIT_CODE"' EXIT
 
+if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
+  echo "Usage: $0 <FEATURE_NAME> --pivot|--persevere"
+  echo "Lean Pivot/Persevere control for a Micro-PDLC feature."
+  exit 0
+fi
+
 if [ $# -lt 2 ]; then
   echo "Usage: $0 <FEATURE_NAME> --pivot|--persevere"
   exit 1

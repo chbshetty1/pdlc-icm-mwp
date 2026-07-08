@@ -14,7 +14,15 @@ source "$SCRIPT_DIR/lib/scan_features.sh"
 source "$SCRIPT_DIR/lib/log.sh"
 trap 'LOG_EXIT_CODE=$?; log_invocation "$ROOT_DIR" "$(basename "$0")" "$*" "$LOG_EXIT_CODE"' EXIT
 
-STAGES=(01_discovery_ideation 02_definition_metrics 03_requirements_specs 04_architecture_design 05_development_test 06_validation_gtm)
+if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
+  echo "Usage: $0"
+  echo "On-demand status scan across all features/ and sprints/: per-workspace stage,"
+  echo "blocked state, last sync, plus a stage-level rollup. Takes no arguments."
+  exit 0
+fi
+
+# shellcheck source=lib/stages.sh
+source "$SCRIPT_DIR/lib/stages.sh"
 
 print_section() {
   local base_dir="$1" label="$2"

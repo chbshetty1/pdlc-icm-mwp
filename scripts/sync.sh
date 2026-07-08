@@ -11,6 +11,13 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$SCRIPT_DIR/lib/log.sh"
 trap 'LOG_EXIT_CODE=$?; log_invocation "$ROOT_DIR" "$(basename "$0")" "$*" "$LOG_EXIT_CODE"' EXIT
 
+if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
+  echo "Usage: $0 <workspace_path> <from_stage> <to_stage> [approver]"
+  echo "Advance approved outputs from one stage into the next stage's inputs."
+  echo "Example: $0 features/FEAT-101_stripe 01_discovery_ideation 02_definition_metrics \"J. Rivera\""
+  exit 0
+fi
+
 if [ $# -lt 3 ]; then
   echo "Usage: $0 <workspace_path> <from_stage> <to_stage> [approver]"
   echo "Example: $0 features/FEAT-101_stripe 01_discovery_ideation 02_definition_metrics \"J. Rivera\""
@@ -34,6 +41,78 @@ if [ -f "$FROM_OUT/BLOCKED_REASON.md" ]; then
   echo "Error: $FROM/outputs contains an unresolved BLOCKED_REASON.md. Resolve it before syncing forward." >&2
   exit 1
 fi
+
+# --- Secrets/credential guardrail (entry 0034) ---
+# Mechanical, regex-based scan of this stage's outputs/ before it syncs
+# forward -- not a real secret scanner (no entropy analysis, no
+# provider-specific API), just the same class of pattern-matching guardrail
+# as entry 0005's shared-path check: catches literal, common shapes of a
+# leaked credential (a private-key block, an AWS-shaped access key ID, a
+# hardcoded api_key/secret/password/token assignment with a non-trivial
+# value) and blocks the sync outright, auto-writing BLOCKED_REASON.md, the
+# same way entry 0005's collision check does. A leaked secret is a different
+# order of severity than an over-length file (entry 0004's guardrail, which
+# only warns): once it syncs forward -- and especially once it's committed
+# -- it can't be un-leaked, so this blocks rather than warns. Runs on every
+# sync, not just specific stage transitions, since a secret can show up in
+# any stage's raw notes or output, not just architecture/code stages.
+check_secrets_guardrail() {
+  local hits=()
+  local f base line
+
+  for f in "$FROM_OUT"/*; do
+    [ -f "$f" ] || continue
+    base="$(basename "$f")"
+    [ "$base" = "BLOCKED_REASON.md" ] && continue
+
+    case "$base" in
+      *.pem|*.key|id_rsa|id_ed25519|*.pfx|*.p12)
+        hits+=("$f — filename looks like a private key/credential file")
+        ;;
+    esac
+
+    if grep -qE -- '-----BEGIN (RSA |EC |OPENSSH |DSA |PGP )?PRIVATE KEY-----' "$f" 2>/dev/null; then
+      hits+=("$f — contains a PRIVATE KEY block")
+    fi
+
+    if grep -qE -- 'AKIA[0-9A-Z]{16}' "$f" 2>/dev/null; then
+      hits+=("$f — contains what looks like an AWS access key ID")
+    fi
+
+    while IFS= read -r line; do
+      [ -z "$line" ] && continue
+      hits+=("$f — line looks like a hardcoded credential: \"${line:0:70}\"")
+    done < <(grep -inE '(api[_-]?key|secret|password|passwd|token|access[_-]?key)[[:space:]]*[:=][[:space:]]*["'"'"']?[A-Za-z0-9/+_=-]{16,}' "$f" 2>/dev/null | grep -viE '\{\{[A-Z_]+\}\}')
+  done
+
+  if [ "${#hits[@]}" -gt 0 ]; then
+    FEATURE_NAME="$(basename "$WORKSPACE")"
+    cat > "$FROM_OUT/BLOCKED_REASON.md" <<EOF
+# BLOCKED: $FEATURE_NAME / $FROM
+
+## What was attempted
+Ran scripts/sync.sh to advance $FROM outputs into $TO inputs.
+
+## Why it failed
+Automated secrets/credential guardrail found content in this stage's outputs that looks like a hardcoded credential:
+$(printf '%s\n' "${hits[@]}" | sed 's/^/- /')
+
+This is a mechanical, pattern-based check (entry 0034) -- not a full secret scanner. It catches literal private-key blocks, AWS-shaped access key IDs, and generic key/secret/password/token assignments with a non-trivial value. It does not catch every possible credential shape, and can false-positive on a genuinely-random-looking non-secret string.
+
+## Attempts made
+1. scripts/sync.sh $WORKSPACE $FROM $TO — blocked automatically before any files were copied.
+
+## What a human needs to decide
+Whether the flagged content is a real credential (rotate/revoke it immediately if so -- it may already be exposed in this stage's outputs, and should never be allowed to sync forward or get committed) or a false positive (a placeholder, example, or non-secret string that happens to match the pattern -- reword it to stop matching, or note it as reviewed).
+
+## Suggested next step
+Review the flagged file(s) above. If real, rotate the credential and remove it from the output file before retrying. If a false positive, edit the file so it no longer matches (e.g. use an obvious placeholder like {{API_KEY}} instead of a real-looking string), then re-run sync.sh.
+EOF
+    echo "Error: possible hardcoded credential detected — see $FROM_OUT/BLOCKED_REASON.md" >&2
+    exit 1
+  fi
+}
+check_secrets_guardrail
 
 # --- Token guardrail check (entry 0004) ---
 # Heuristic estimate (word_count * 1.3), not a real tokenizer -- close enough

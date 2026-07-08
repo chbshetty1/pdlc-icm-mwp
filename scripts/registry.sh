@@ -20,6 +20,13 @@ get_field() {
   grep -E "^${2}:" "$1" 2>/dev/null | head -1 | sed -E "s/^${2}:[[:space:]]*//"
 }
 
+if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
+  echo "Usage: $0"
+  echo "Regenerate .mwp/FEATURE_PRIORITY_REGISTRY.md from every feature's FEATURE_META.md."
+  echo "Takes no arguments. Never hand-edit the registry; edit FEATURE_META.md instead."
+  exit 0
+fi
+
 mkdir -p "$ROOT_DIR/.mwp"
 
 ANCHOR_ROWS=()

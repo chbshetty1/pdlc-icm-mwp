@@ -11,6 +11,13 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$SCRIPT_DIR/lib/log.sh"
 trap 'LOG_EXIT_CODE=$?; log_invocation "$ROOT_DIR" "$(basename "$0")" "$*" "$LOG_EXIT_CODE"' EXIT
 
+if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
+  echo "Usage: $0 <workspace_path> [stage]"
+  echo "Archive a stage's outputs/ except SUMMARY_SNAPSHOT.md, which must exist first."
+  echo "Example: $0 features/FEAT-101_stripe 05_development_test"
+  exit 0
+fi
+
 if [ $# -lt 1 ]; then
   echo "Usage: $0 <workspace_path> [stage]"
   echo "Example: $0 features/FEAT-101_stripe 05_development_test"

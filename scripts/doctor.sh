@@ -25,6 +25,13 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$SCRIPT_DIR/lib/log.sh"
 trap 'LOG_EXIT_CODE=$?; log_invocation "$ROOT_DIR" "$(basename "$0")" "$*" "$LOG_EXIT_CODE"' EXIT
 
+if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
+  echo "Usage: $0 [--install-missing]"
+  echo "Check the tool stack in docs/TOOLING_MATRIX.md. Report-only by default;"
+  echo "--install-missing installs whatever it safely can (repomix, mermaid CLI, duckdb)."
+  exit 0
+fi
+
 INSTALL_MISSING=false
 if [ "${1:-}" = "--install-missing" ]; then
   INSTALL_MISSING=true

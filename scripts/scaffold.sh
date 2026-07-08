@@ -12,7 +12,15 @@ TEMPLATES_DIR="$ROOT_DIR/.mwp-templates"
 source "$SCRIPT_DIR/lib/log.sh"
 trap 'LOG_EXIT_CODE=$?; log_invocation "$ROOT_DIR" "$(basename "$0")" "$*" "$LOG_EXIT_CODE"' EXIT
 
-STAGES=(01_discovery_ideation 02_definition_metrics 03_requirements_specs 04_architecture_design 05_development_test 06_validation_gtm)
+if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
+  echo "Usage: $0 --feature <FEAT-xxx_name> | --sprint <SPRINT-xx_name>"
+  echo "Scaffold a new Micro-PDLC feature or Agile-PDLC sprint workspace from .mwp-templates/."
+  echo "Features get a FEATURE_META.md for C-V-R scoring; sprints don't (see docs/evolution/0027)."
+  exit 0
+fi
+
+# shellcheck source=lib/stages.sh
+source "$SCRIPT_DIR/lib/stages.sh"
 
 usage() {
   echo "Usage: $0 --feature <FEAT-xxx_name> | --sprint <SPRINT-xx_name>"
