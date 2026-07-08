@@ -58,16 +58,28 @@ mkdir -p "$TARGET_DIR/06_validation_gtm/validation_data" "$TARGET_DIR/06_validat
 # Resolved BLOCKED_REASON.md files are always archived here, never deleted — see docs/evolution/0010-archive-not-delete-escalations.md
 mkdir -p "$TARGET_DIR/.escalations_archive"
 
-if [ -f "$TEMPLATES_DIR/FEATURE_META.template.md" ]; then
-  sed "s/{{FEATURE_NAME}}/$NAME/g" "$TEMPLATES_DIR/FEATURE_META.template.md" > "$TARGET_DIR/FEATURE_META.md"
-else
-  echo "Warning: no FEATURE_META.template.md found at $TEMPLATES_DIR — skipping." >&2
+# FEATURE_META.md (C-V-R scoring) only applies to --feature mode. A sprint
+# is a shared, time-boxed Agile-PDLC batch, not a single scored hypothesis
+# the way a Micro-PDLC feature is -- registry.sh only ever scans features/,
+# so a sprint's FEATURE_META.md would be silently unread dead weight.
+# See docs/evolution/0027-sprint-mode-feature-meta-dead-weight.md.
+if [ "$MODE" = "--feature" ]; then
+  if [ -f "$TEMPLATES_DIR/FEATURE_META.template.md" ]; then
+    sed "s/{{FEATURE_NAME}}/$NAME/g" "$TEMPLATES_DIR/FEATURE_META.template.md" > "$TARGET_DIR/FEATURE_META.md"
+  else
+    echo "Warning: no FEATURE_META.template.md found at $TEMPLATES_DIR — skipping." >&2
+  fi
 fi
 
 echo "Done."
 echo "Next steps:"
 echo "  1. Drop raw discovery material into $TARGET_DIR/${STAGES[0]}/inputs/"
-echo "  2. Fill in $TARGET_DIR/FEATURE_META.md — set is_core_anchor: true for Phase 0 foundational work,"
-echo "     otherwise score it (C-V-R) per docs/PRIORITIZATION_GUIDE.md. Never hand-edit the registry directly."
-echo "  3. Run ./scripts/registry.sh to regenerate .mwp/FEATURE_PRIORITY_REGISTRY.md from all features' metadata."
-echo "  4. Open Claude Chat/Desktop and start stage 01."
+if [ "$MODE" = "--feature" ]; then
+  echo "  2. Fill in $TARGET_DIR/FEATURE_META.md — set is_core_anchor: true for Phase 0 foundational work,"
+  echo "     otherwise score it (C-V-R) per docs/PRIORITIZATION_GUIDE.md. Never hand-edit the registry directly."
+  echo "  3. Run ./scripts/registry.sh to regenerate .mwp/FEATURE_PRIORITY_REGISTRY.md from all features' metadata."
+  echo "  4. Open Claude Chat/Desktop and start stage 01."
+else
+  echo "  2. Open Claude Chat/Desktop and start stage 01. Sprints aren't C-V-R scored or tracked in"
+  echo "     the priority registry — that applies to features only."
+fi

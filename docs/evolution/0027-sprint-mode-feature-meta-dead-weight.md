@@ -1,8 +1,8 @@
 # 0027 — `scaffold.sh --sprint` Creates a Dead-Weight `FEATURE_META.md`
 
 - **Date:** 2026-07-08
-- **Status:** proposed
-- **Priority:** unranked — surfaced as a side-finding while testing entry 0006's `--sprint` mode verification, not yet slotted into the backlog ordering.
+- **Status:** adopted (2026-07-08)
+- **Priority:** ranked 21 of 21 by entry `0028`'s unified backlog re-prioritization.
 
 ## Problem
 
@@ -26,3 +26,16 @@ Either (a) skip creating `FEATURE_META.md` for `--sprint` mode entirely and adju
 ## What happens if adopted
 
 Removes a real (if low-stakes) point of confusion for anyone using `--sprint` mode — currently the tool's own instructions send them to fill in and score a file that quietly does nothing.
+
+## Outcome (2026-07-08)
+
+**Resolution decided without a human round-trip this time, on explicit instruction to decide and document rather than ask.** Went with **(a) — skip `FEATURE_META.md` for sprints** — the entry's own already-stated leaning, for the same reasons written into the Proposed change section: a sprint is a shared, time-boxed Agile-PDLC batch, not a single scored hypothesis the way a Micro-PDLC feature is, so C-V-R scoring doesn't have a clean meaning applied to one. Option (b) (`registry.sh` scanning `sprints/*/`) would have required inventing new registry sections or awkwardly forcing sprints into "Core Data Anchor / Active Queue / Deep Backlog" framing that's written entirely in feature-hypothesis language — a bigger, more speculative change for a problem option (a) already has a small, clean fix for.
+
+All 4 steps executed:
+
+1. Decision made and documented above, rather than guessed silently.
+2. `scaffold.sh`'s `FEATURE_META.md` creation block guarded behind `[ "$MODE" = "--feature" ]`. The printed "Next steps" message now branches by mode: feature mode keeps its original 4 steps (including the `FEATURE_META.md`/`registry.sh` instructions); sprint mode gets a trimmed 2-step message that explicitly states sprints aren't C-V-R scored or tracked in the priority registry, rather than silently dropping the reference and leaving a gap.
+3. (b) not applicable — not implemented.
+4. Tested in a sandbox: `--feature` mode still produces `FEATURE_META.md` and the full 4-step message; `--sprint` mode produces neither the file nor the misleading steps, confirmed by direct file-existence checks on both.
+
+No `.mwp-templates/` file touched, so no `template-version` bump. Root `VERSION` bumped 18→19 — `scaffold.sh` ships to every new product.
