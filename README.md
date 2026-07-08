@@ -25,12 +25,14 @@ The optional per-stage tools (Fabric, Graphify, Repomix, Mermaid CLI, DuckDB, Ob
 | `docs/FAQ.md` | Answers to recurring meta-questions (is Claude required, can the framework develop itself, is that a PDLC, git/repo operational lessons). **Travels with new products.** |
 | `docs/MIGRATIONS.md` | One row per MAJOR `VERSION` bump — what broke, what a product repo on an older version needs to do about it. See `docs/evolution/0029-tiered-version-scheme.md`. **Travels with new products.** |
 | `hooks/post-commit` | Sample git hook a product repo can adopt to auto-refresh Graphify/Repomix on relevant commits. |
+| `hooks/pre-commit` | Sample git hook — blocks a commit containing a credential-shaped string (reuses `sync.sh`'s entry 0034 secrets-guardrail patterns). Optional, not auto-installed, bypass with `git commit --no-verify`. See `docs/evolution/0040-precommit-secrets-hook.md`. |
 | `CLAUDE.md` | Root automation-routing rules Claude Code reads when working inside a product workspace built from this template. |
 | `VERSION` | `MAJOR.MINOR.PATCH`, bumped whenever an adopted change ships to `.mwp-templates/`, `scripts/`, or `CLAUDE.md` — tier chosen per entry `0029`'s rules (patch = doc wording only, minor = backward-compatible addition, major = could break something already scaffolded). Tells a product repo what point in this framework's history it started from — not whether it's current. Check `docs/MIGRATIONS.md` if the major number is behind. **Travels with new products.** |
 | `PROJECT_PLAN.md` | Planning history — how this framework's design decisions were made. **Framework-repo only, does not travel.** |
 | `docs/evolution/` | Append-only log of this framework template's own design analyses, critiques, and changes — see `EVOLUTION_LOG.md` for the convention. **Framework-repo only, does not travel** (the convention is reusable for your own product if you want it — the specific entries aren't). |
 | `docs/DEVELOPMENT.md` | How to develop *this framework itself* — change process, script conventions, doc map, adoption checklist, known cross-entry collisions, testing. **Framework-repo only, does not travel.** |
 | `tests/` | Dependency-free bash test harness (`run_tests.sh` + `test_*.sh` suites, no `bats-core`) covering `scripts/*.sh` — regression protection for previously-documented gotchas (e.g. entry `0014`'s `$?`-trap bug) plus smoke coverage for the rest. See `docs/evolution/0030-script-test-harness.md`. **Framework-repo only, does not travel.** |
+| `.github/workflows/test.yml` | Runs `tests/run_tests.sh` on every push/PR to `main` — catches a script regression before it reaches `main` instead of relying on someone running the suite by hand. See `docs/evolution/0041-ci-workflow.md`. **Framework-repo only, does not travel** (meaningless without `tests/`, which doesn't travel either). |
 
 ## Core design
 

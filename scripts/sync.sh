@@ -240,6 +240,13 @@ EOF
     ADDED=$((ADDED + 1))
   done < "$LEARNINGS_NOTE"
   [ "$ADDED" -gt 0 ] && echo "Folded $ADDED discovery line(s) from $LEARNINGS_NOTE into $LEARNINGS_FILE."
+  # Idempotency fix (entry 0038): rename, don't delete, once folded -- same
+  # archive-not-delete reasoning as entry 0010's BLOCKED_REASON.md handling.
+  # Without this, re-running sync.sh for the same transition (a mistake, or
+  # a deliberate re-sync after fixing something) re-appends the exact same
+  # discovery lines into LEARNINGS.md every time, since nothing previously
+  # marked the note as already folded.
+  mv "$LEARNINGS_NOTE" "$FROM_OUT/Learnings_Note.md.folded"
 fi
 
 # --- Sync audit trail (entry 0009) ---

@@ -57,6 +57,14 @@ assert_file_exists "$SCRATCH/LEARNINGS.md" "LEARNINGS.md auto-created on first L
 assert_file_contains "$SCRATCH/LEARNINGS.md" "widget X needs a fallback" "the real discovery line was folded in"
 assert_file_not_contains "$SCRATCH/LEARNINGS.md" "comment lines are skipped" "comment lines were NOT folded in"
 
+# --- Entry 0038: idempotency -- re-running the same transition does not re-fold ---
+assert_file_exists "$FEATURE/03_requirements_specs/outputs/Learnings_Note.md.folded" "Learnings_Note.md renamed to .folded after fold (entry 0038)"
+assert_file_not_exists "$FEATURE/03_requirements_specs/outputs/Learnings_Note.md" "original Learnings_Note.md no longer present after fold"
+BEFORE_COUNT="$(grep -c "widget X needs a fallback" "$SCRATCH/LEARNINGS.md")"
+bash scripts/sync.sh "$FEATURE" 03_requirements_specs 04_architecture_design >/dev/null 2>&1
+AFTER_COUNT="$(grep -c "widget X needs a fallback" "$SCRATCH/LEARNINGS.md")"
+assert_equal "$BEFORE_COUNT" "$AFTER_COUNT" "re-running the same sync does not re-fold and duplicate the discovery line (entry 0038)"
+
 # --- Entry 0005: shared-path collision blocks 04->05 and writes BLOCKED_REASON.md ---
 mkdir -p "$SCRATCH/.mwp"
 cp "$SCRATCH/.mwp-templates/GLOBAL_CONTEXT.template.md" "$SCRATCH/.mwp/GLOBAL_CONTEXT.md"

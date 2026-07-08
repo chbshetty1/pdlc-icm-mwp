@@ -89,6 +89,14 @@ EOF
     added=$((added + 1))
   done < "$note"
   [ "$added" -gt 0 ] && echo "Folded $added discovery line(s) from $note into $learnings_file."
+  # Idempotency fix (entry 0038): same reasoning as sync.sh's identical
+  # block -- rename, don't delete, once folded, so a second --persevere (or
+  # a --pivot after an earlier --persevere) doesn't re-append the same
+  # discovery lines into LEARNINGS.md again. Only reached for --persevere,
+  # since --pivot's caller folds first, then purges the whole feature
+  # directory (including this note) immediately after -- nothing survives
+  # to be re-run against.
+  mv "$note" "$FEATURE_DIR/06_validation_gtm/outputs/Learnings_Note.md.folded"
 }
 
 case "$ACTION" in

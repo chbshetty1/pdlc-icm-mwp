@@ -40,6 +40,14 @@ sed -i 's/^r:/r: 5/' features/FEAT-003_deep/FEATURE_META.md
 # Unscored feature
 bash scripts/scaffold.sh --feature FEAT-004_unscored >/dev/null 2>&1
 
+# Malformed feature (entry 0039): C/V/R present but not a valid 1-5 integer --
+# must NOT silently score as 0 via awk's arithmetic coercion.
+bash scripts/scaffold.sh --feature FEAT-005_malformed >/dev/null 2>&1
+sed -i 's/^name:/name: Malformed feature/' features/FEAT-005_malformed/FEATURE_META.md
+sed -i 's/^c:/c: 3/' features/FEAT-005_malformed/FEATURE_META.md
+sed -i 's/^v:/v: 3/' features/FEAT-005_malformed/FEATURE_META.md
+sed -i 's/^r:/r: high/' features/FEAT-005_malformed/FEATURE_META.md
+
 # A sprint whose FEATURE_META.md would exist only on a pre-0027 framework --
 # simulate that stale state to confirm registry.sh really never reads it.
 bash scripts/scaffold.sh --sprint SPRINT-01_test >/dev/null 2>&1
@@ -62,7 +70,16 @@ assert_contains "$REG" "Scored feature" "scored low-risk feature listed"
 assert_contains "$REG" "Deep backlog feature" "high-risk (R>=4) feature routed to Deep Backlog"
 assert_contains "$REG" "FEAT-004_unscored" "unscored feature listed under Not yet scored"
 assert_not_contains "$REG" "Should never appear in the registry" "sprint's FEATURE_META.md is never read (entry 0027's assumption holds)"
-assert_contains "$OUT" "4 feature(s)" "registry.sh reports scanning exactly the 4 features, not the sprint"
+assert_contains "$OUT" "5 feature(s)" "registry.sh reports scanning exactly the 5 features, not the sprint"
+
+# --- Entry 0039: malformed C/V/R routed to its own section, not silently scored as 0 ---
+assert_contains "$REG" "## Malformed" "registry has a Malformed section (entry 0039)"
+assert_contains "$REG" "Malformed feature" "malformed feature is listed"
+assert_contains "$REG" 'r="high"' "malformed row names the actual bad r value"
+MALFORMED_SECTION="$(awk '/^## Malformed/,0' .mwp/FEATURE_PRIORITY_REGISTRY.md)"
+ACTIVE_SECTION="$(awk '/^## Active execution queue/,/^## Deep context backlog/' .mwp/FEATURE_PRIORITY_REGISTRY.md)"
+assert_contains "$MALFORMED_SECTION" "Malformed feature" "malformed feature's row lives in the Malformed section"
+assert_not_contains "$ACTIVE_SECTION" "Malformed feature" "malformed feature does NOT silently appear in the Active queue scored as 0"
 
 # --- status.sh: per-workspace + stage rollup ---
 OUT_STATUS="$(bash scripts/status.sh 2>&1)"

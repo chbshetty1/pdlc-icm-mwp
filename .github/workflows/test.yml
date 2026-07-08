@@ -1,0 +1,26 @@
+name: Framework tests
+
+# Runs tests/run_tests.sh (entry 0030's dependency-free bash suite) on every
+# push and pull request to main, so a script regression is caught before it
+# reaches main rather than being discovered the next time someone happens to
+# run the suite by hand. Framework-repo-only, same as tests/ itself -- this
+# workflow validates this framework's own scripts, not anything a product
+# team copies. See docs/evolution/0041-ci-workflow.md.
+#
+# Single job, no matrix, no caching: the whole suite runs in a few seconds
+# (see docs/evolution/0037-scale-smoke-test-registry-status.md), so there's
+# nothing worth optimizing here yet.
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run tests/run_tests.sh
+        run: bash tests/run_tests.sh

@@ -33,6 +33,7 @@ ANCHOR_ROWS=()
 ACTIVE_ROWS=()
 DEEP_ROWS=()
 UNSCORED_ROWS=()
+MALFORMED_ROWS=()
 
 while IFS= read -r FEATURE_DIR; do
   meta="$FEATURE_DIR/FEATURE_META.md"
@@ -54,6 +55,26 @@ while IFS= read -r FEATURE_DIR; do
 
   if [ -z "$C" ] || [ -z "$V" ] || [ -z "$R" ]; then
     UNSCORED_ROWS+=("| $FID | $NAME | $STATUS | \`$REL_PATH\` |")
+    continue
+  fi
+
+  # --- C/V/R contract validation (entry 0039) ---
+  # All three fields are present at this point (the blank check above already
+  # routed away anything missing a field) -- but present doesn't mean valid.
+  # docs/PRIORITIZATION_GUIDE.md's contract is an integer 1-5 for each. A
+  # non-numeric or out-of-range value would otherwise silently compute as a
+  # SCORE of 0 via awk's arithmetic coercion just below (a non-numeric string
+  # coerces to 0 in awk arithmetic context) -- indistinguishable from a
+  # legitimately low-priority feature. Route it to its own bucket instead so
+  # a human sees *why* it isn't scored, not just that the score happens to be
+  # rock-bottom.
+  BAD_FIELDS=""
+  [[ "$C" =~ ^[1-5]$ ]] || BAD_FIELDS="${BAD_FIELDS}c=\"$C\" "
+  [[ "$V" =~ ^[1-5]$ ]] || BAD_FIELDS="${BAD_FIELDS}v=\"$V\" "
+  [[ "$R" =~ ^[1-5]$ ]] || BAD_FIELDS="${BAD_FIELDS}r=\"$R\" "
+
+  if [ -n "$BAD_FIELDS" ]; then
+    MALFORMED_ROWS+=("| $FID | $NAME | $STATUS | \`$REL_PATH\` | ${BAD_FIELDS% } |")
     continue
   fi
 
@@ -103,13 +124,24 @@ sorted() {
     echo "|---|---|---|---|"
     printf '%s\n' "${UNSCORED_ROWS[@]}"
   fi
+  if [ "${#MALFORMED_ROWS[@]}" -gt 0 ]; then
+    echo ""
+    echo "## Malformed (needs attention)"
+    echo ""
+    echo "<!-- C/V/R present but not a valid 1-5 integer per docs/PRIORITIZATION_GUIDE.md -- entry 0039. Fix the listed field(s) in FEATURE_META.md and re-run registry.sh. -->"
+    echo ""
+    echo "| Feature ID | Name | Status | Workspace Path | Invalid field(s) |"
+    echo "|---|---|---|---|---|"
+    printf '%s\n' "${MALFORMED_ROWS[@]}"
+  fi
   echo ""
   echo "## Rules"
   echo ""
   echo "1. Core Data Anchors always run first and are never scored."
   echo "2. Features with R >= 4 move to the Deep Context Backlog and run sequentially with mandatory human review at every stage gate — never in parallel with other features touching the same subsystem."
   echo "3. Everything else runs in the Active Execution Queue, highest score first, and can be parallelized across separate terminal/agent sessions since Micro-PDLC isolates each feature's folder."
+  echo "4. A Malformed feature is excluded from scoring entirely (not scored as 0) until its C/V/R fields are fixed to valid 1-5 integers."
 } > "$OUT_FILE"
 
-TOTAL=$(( ${#ANCHOR_ROWS[@]} + ${#ACTIVE_ROWS[@]} + ${#DEEP_ROWS[@]} + ${#UNSCORED_ROWS[@]} ))
+TOTAL=$(( ${#ANCHOR_ROWS[@]} + ${#ACTIVE_ROWS[@]} + ${#DEEP_ROWS[@]} + ${#UNSCORED_ROWS[@]} + ${#MALFORMED_ROWS[@]} ))
 echo "Regenerated $OUT_FILE from $TOTAL feature(s)."

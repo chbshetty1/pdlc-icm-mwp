@@ -1,0 +1,60 @@
+#!/bin/bash
+# Sample git hook. In this framework repo, or a product repo built from it,
+# copy this file to .git/hooks/pre-commit and run:
+#   chmod +x .git/hooks/pre-commit
+#
+# Reuses the same detection patterns as scripts/sync.sh's
+# check_secrets_guardrail() (entry 0034), applied to staged files instead of
+# a stage's outputs/ -- motivated directly by a real near-miss: a test
+# fixture shaped like a Stripe live key got committed locally and was only
+# caught afterward by GitHub's server-side push protection, after the
+# commit already existed and needed an amend to fix. This hook exists to
+# catch that earlier -- locally, before the commit is even made. See
+# docs/evolution/0040-precommit-secrets-hook.md.
+#
+# Same honesty as every other guardrail in this framework: mechanical,
+# pattern-based, not a full secret scanner. It checks each staged file's
+# current on-disk content (not the exact staged blob, so a partially-staged
+# file is checked as it sits on disk) -- a deliberate simplification for a
+# sample hook, not a security boundary.
+set -euo pipefail
+
+STAGED_FILES="$(git diff --cached --name-only --diff-filter=ACM)"
+[ -z "$STAGED_FILES" ] && exit 0
+
+HITS=()
+
+while IFS= read -r f; do
+  [ -f "$f" ] || continue
+  base="$(basename "$f")"
+
+  case "$base" in
+    *.pem|*.key|id_rsa|id_ed25519|*.pfx|*.p12)
+      HITS+=("$f — filename looks like a private key/credential file")
+      ;;
+  esac
+
+  if grep -qE -- '-----BEGIN (RSA |EC |OPENSSH |DSA |PGP )?PRIVATE KEY-----' "$f" 2>/dev/null; then
+    HITS+=("$f — contains a PRIVATE KEY block")
+  fi
+
+  if grep -qE -- 'AKIA[0-9A-Z]{16}' "$f" 2>/dev/null; then
+    HITS+=("$f — contains what looks like an AWS access key ID")
+  fi
+
+  while IFS= read -r line; do
+    [ -z "$line" ] && continue
+    HITS+=("$f — line looks like a hardcoded credential: \"${line:0:70}\"")
+  done < <(grep -inE '(api[_-]?key|secret|password|passwd|token|access[_-]?key)[[:space:]]*[:=][[:space:]]*["'"'"']?[A-Za-z0-9/+_=-]{16,}' "$f" 2>/dev/null | grep -viE '\{\{[A-Z_]+\}\}')
+done <<< "$STAGED_FILES"
+
+if [ "${#HITS[@]}" -gt 0 ]; then
+  echo "pre-commit: possible hardcoded credential(s) detected — commit blocked." >&2
+  printf '  %s\n' "${HITS[@]}" >&2
+  echo "" >&2
+  echo "Mechanical, pattern-based check (same as scripts/sync.sh's entry 0034 guardrail) -- not a full secret scanner. If this is a false positive (a placeholder, or a genuinely-random-looking non-secret string), reword it to stop matching, or bypass this hook once with:" >&2
+  echo "  git commit --no-verify" >&2
+  exit 1
+fi
+
+exit 0

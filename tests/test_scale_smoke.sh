@@ -3,13 +3,23 @@
 # Covers entry 0037: registry.sh and status.sh have only ever been exercised
 # against 2-4 synthetic features in the other suites -- nothing has checked
 # either script against something closer to a real product's scale, where
-# bash-array bugs, sort-stability issues, or an R=0 divide-by-zero edge case
-# would actually show up. Generates 60 synthetic features (with a deliberate
-# mix of anchor/scored/unscored/R=0 cases) and 8 sprints, then asserts both
-# scripts still produce correct, correctly-bucketed, correctly-sorted output
-# -- and finish in reasonable time, as a smoke test rather than a strict
-# timed benchmark (this sandbox's performance isn't a stable baseline to
-# assert a tight threshold against).
+# bash-array bugs or sort-stability issues would actually show up. Generates
+# 60 synthetic features (with a deliberate mix of anchor/scored/unscored/
+# R=0 cases) and 8 sprints, then asserts both scripts still produce correct,
+# correctly-bucketed, correctly-sorted output -- and finish in reasonable
+# time, as a smoke test rather than a strict timed benchmark (this sandbox's
+# performance isn't a stable baseline to assert a tight threshold against).
+#
+# The R=0 features were originally added to exercise registry.sh's awk
+# divide-by-zero guard (R=0 would otherwise crash the (C*V)/R score
+# calculation). Entry 0039 later added C/V/R contract validation -- R=0
+# fails the "must be an integer 1-5" check per docs/PRIORITIZATION_GUIDE.md,
+# so those features are now correctly routed to the Malformed bucket instead
+# of ever reaching the score calculation at all. The awk guard is harmless
+# dead code at this point (kept as a defensive fallback), but this suite's
+# expectations were updated to match the new, more correct classification --
+# see this file's own regression history in docs/evolution/0039 for how this
+# was caught (this suite itself failed, correctly, when 0039 first landed).
 set -uo pipefail
 TESTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="${ROOT_DIR:-$(cd "$TESTS_DIR/.." && pwd)}"
@@ -29,6 +39,7 @@ EXPECTED_ANCHOR=0
 EXPECTED_UNSCORED=0
 EXPECTED_ACTIVE=0
 EXPECTED_DEEP=0
+EXPECTED_MALFORMED=0
 MAX_ACTIVE_SCORE="-1"
 MAX_ACTIVE_ID=""
 MAX_DEEP_SCORE="-1"
@@ -84,7 +95,12 @@ r: $R
 status: not started
 is_core_anchor: false
 EOF
-    if [ "$R" -ge 4 ]; then
+    if [ "$R" -eq 0 ]; then
+      # Entry 0039: R=0 is not a valid 1-5 integer, so registry.sh now
+      # routes this to the Malformed bucket before it ever reaches the
+      # score calculation -- it's neither Active nor Deep.
+      EXPECTED_MALFORMED=$((EXPECTED_MALFORMED + 1))
+    elif [ "$R" -ge 4 ]; then
       EXPECTED_DEEP=$((EXPECTED_DEEP + 1))
       if awk -v a="$SCORE" -v b="$MAX_DEEP_SCORE" 'BEGIN{exit !(a>b)}'; then
         MAX_DEEP_SCORE="$SCORE"; MAX_DEEP_ID="$FID"
@@ -151,8 +167,13 @@ assert_equal "$EXPECTED_ACTIVE" "$ACTIVE_ROWS_ACTUAL" "Active queue row count ma
 DEEP_ROWS_ACTUAL="$(awk '/^## Deep context backlog/,/^## Not yet scored|^## Rules/' "$REG_FILE" | grep -cE '^\| FEAT-')"
 assert_equal "$EXPECTED_DEEP" "$DEEP_ROWS_ACTUAL" "Deep backlog row count matches ($EXPECTED_DEEP)"
 
-UNSCORED_ROWS_ACTUAL="$(awk '/^## Not yet scored/,0' "$REG_FILE" | grep -cE '^\| FEAT-')"
+UNSCORED_ROWS_ACTUAL="$(awk '/^## Not yet scored/,/^## Malformed|^## Rules/' "$REG_FILE" | grep -cE '^\| FEAT-')"
 assert_equal "$EXPECTED_UNSCORED" "$UNSCORED_ROWS_ACTUAL" "Not-yet-scored row count matches ($EXPECTED_UNSCORED)"
+
+# --- Entry 0039: malformed C/V/R (the R=0 features) routed to their own
+# section, not silently miscounted into Active or Not-yet-scored. ---
+MALFORMED_ROWS_ACTUAL="$(awk '/^## Malformed/,/^## Rules/' "$REG_FILE" | grep -cE '^\| FEAT-')"
+assert_equal "$EXPECTED_MALFORMED" "$MALFORMED_ROWS_ACTUAL" "Malformed row count matches ($EXPECTED_MALFORMED)"
 
 # --- Run status.sh, time it, check correctness ---
 START=$(date +%s)

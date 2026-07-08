@@ -43,6 +43,13 @@ bash scripts/pivot.sh FEAT-003_persevere --persevere >/dev/null 2>&1
 assert_dir_exists "$SCRATCH/$FEATURE2" "persevere leaves the feature directory intact"
 assert_file_contains "$SCRATCH/LEARNINGS.md" "progress indicator" "persevere also folds stage-06 Learnings_Note.md"
 
+# --- Entry 0038: idempotency -- re-running --persevere does not re-fold ---
+assert_file_exists "$SCRATCH/$FEATURE2/06_validation_gtm/outputs/Learnings_Note.md.folded" "stage-06 Learnings_Note.md renamed to .folded after persevere (entry 0038)"
+BEFORE_COUNT2="$(grep -c "progress indicator" "$SCRATCH/LEARNINGS.md")"
+bash scripts/pivot.sh FEAT-003_persevere --persevere >/dev/null 2>&1
+AFTER_COUNT2="$(grep -c "progress indicator" "$SCRATCH/LEARNINGS.md")"
+assert_equal "$BEFORE_COUNT2" "$AFTER_COUNT2" "re-running --persevere does not re-fold and duplicate the discovery line (entry 0038)"
+
 # --- Unknown feature name fails cleanly ---
 set +e
 bash scripts/pivot.sh FEAT-999_does_not_exist --pivot >/tmp/pivot_missing_out 2>&1
