@@ -18,6 +18,13 @@
 # graphify install) that shouldn't run unattended.
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# shellcheck source=lib/log.sh
+source "$SCRIPT_DIR/lib/log.sh"
+trap 'LOG_EXIT_CODE=$?; log_invocation "$ROOT_DIR" "$(basename "$0")" "$*" "$LOG_EXIT_CODE"' EXIT
+
 INSTALL_MISSING=false
 if [ "${1:-}" = "--install-missing" ]; then
   INSTALL_MISSING=true

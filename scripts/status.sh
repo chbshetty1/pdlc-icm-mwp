@@ -10,6 +10,9 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # shellcheck source=lib/scan_features.sh
 source "$SCRIPT_DIR/lib/scan_features.sh"
+# shellcheck source=lib/log.sh
+source "$SCRIPT_DIR/lib/log.sh"
+trap 'LOG_EXIT_CODE=$?; log_invocation "$ROOT_DIR" "$(basename "$0")" "$*" "$LOG_EXIT_CODE"' EXIT
 
 STAGES=(01_discovery_ideation 02_definition_metrics 03_requirements_specs 04_architecture_design 05_development_test 06_validation_gtm)
 

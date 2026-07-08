@@ -3,6 +3,7 @@ features/
 sprints/
 .archive/
 .mwp/GLOBAL_CONTEXT.md
+.mwp/framework.log
 graphify-out/
 *.repomix-output.*
 .DS_Store

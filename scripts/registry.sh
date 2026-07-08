@@ -12,6 +12,9 @@ OUT_FILE="$ROOT_DIR/.mwp/FEATURE_PRIORITY_REGISTRY.md"
 
 # shellcheck source=lib/scan_features.sh
 source "$SCRIPT_DIR/lib/scan_features.sh"
+# shellcheck source=lib/log.sh
+source "$SCRIPT_DIR/lib/log.sh"
+trap 'LOG_EXIT_CODE=$?; log_invocation "$ROOT_DIR" "$(basename "$0")" "$*" "$LOG_EXIT_CODE"' EXIT
 
 get_field() {
   grep -E "^${2}:" "$1" 2>/dev/null | head -1 | sed -E "s/^${2}:[[:space:]]*//"
