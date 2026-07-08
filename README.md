@@ -63,22 +63,24 @@ cp ../"PDLC - ICM-MWP"/docs/CLAUDE_WORKFLOW_PLAYBOOK.md ./docs/
 cp ../"PDLC - ICM-MWP"/docs/PRIORITIZATION_GUIDE.md ./docs/
 cp ../"PDLC - ICM-MWP"/docs/TOOLING_MATRIX.md ./docs/
 cp ../"PDLC - ICM-MWP"/docs/CONSTRAINTS.md ./docs/
-# note: docs/evolution/ and PROJECT_PLAN.md stay behind — they're about this
-# framework template's own design history, not your product's. If you want to
-# track your own product/architecture decisions the same way, start a fresh
-# docs/evolution/ in your new repo — the convention travels even though the
-# specific entries shouldn't.
 
-# 4. Write your product's global context
+# 4. Set up this product's own evolution log (its architecture/decision
+# history — separate from the framework's own docs/evolution/, which stays
+# behind and does not copy over). Starts empty; only the convention travels,
+# not the framework's specific entries.
+mkdir -p ./docs/evolution
+cp .mwp-templates/PRODUCT_EVOLUTION_LOG_TEMPLATE.md ./docs/evolution/EVOLUTION_LOG.md
+
+# 5. Write your product's global context
 cp .mwp-templates/GLOBAL_CONTEXT.template.md .mwp/GLOBAL_CONTEXT.md
 # edit .mwp/GLOBAL_CONTEXT.md with your real stack, product name, constraints
 
-# 5. Set up the lessons-learned register (pivot.sh will also self-create this
+# 6. Set up the lessons-learned register (pivot.sh will also self-create this
 # on the first --pivot if you skip this step, but copying it now keeps its
 # header/instructions intact from the start)
 cp .mwp-templates/LESSONS_LEARNED.template.md ./LESSONS_LEARNED.md
 
-# 6. Spin up your first feature (always a Core Data Anchor first)
+# 7. Spin up your first feature (always a Core Data Anchor first)
 bash scripts/scaffold.sh --feature FEAT-001_core_architecture_and_schema
 ```
 

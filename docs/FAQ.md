@@ -70,9 +70,11 @@ git push --force-with-lease --set-upstream origin main
 
 ## Which docs travel with a new product built from this framework, and which stay behind?
 
-**Travels:** `docs/FAQ.md`, `docs/CLAUDE_WORKFLOW_PLAYBOOK.md`, `docs/PRIORITIZATION_GUIDE.md`, `docs/TOOLING_MATRIX.md` — these are reference material a product team actually needs day-to-day, regardless of which product they're building. The README's "Using this framework for a new product" copy commands include them.
+**Travels:** `docs/FAQ.md`, `docs/CLAUDE_WORKFLOW_PLAYBOOK.md`, `docs/PRIORITIZATION_GUIDE.md`, `docs/TOOLING_MATRIX.md`, `docs/CONSTRAINTS.md` — these are reference material a product team actually needs day-to-day, regardless of which product they're building. The README's "Using this framework for a new product" copy commands include them.
 
-**Stays behind:** `docs/evolution/` and `PROJECT_PLAN.md` — these are about *this framework template's own* design history (why it has 6 stages, why C-V-R has a bypass rule, why the scripts are shaped the way they are). None of that is about your product. If you want to track your own product's architecture decisions the same append-only way, start a fresh `docs/evolution/` in your new repo — copy the convention (see `EVOLUTION_LOG.md`'s "How to use this" section), not the specific entries.
+**Stays behind:** `docs/evolution/` (this repo's own entries), `PROJECT_PLAN.md`, and `docs/DEVELOPMENT.md` — these are about *this framework template's own* design history and how to develop it (why it has 6 stages, why C-V-R has a bypass rule, why the scripts are shaped the way they are). None of that is about your product.
+
+**Ships automatically, but starts empty:** your product gets its own `docs/evolution/EVOLUTION_LOG.md`, generated from `.mwp-templates/PRODUCT_EVOLUTION_LOG_TEMPLATE.md` as part of the same copy step — the append-only convention travels (see that file's "How to use this" section), the framework's own specific entries don't. This used to be a "start one yourself if you want it" suggestion; it's now handed to every new product with zero entries, ready to use from feature one. See `docs/evolution/0007-product-level-decision-log.md`.
 
 ## Can VS Code (or Claude Code CLI) automatically capture FAQ-worthy conversations into this file?
 

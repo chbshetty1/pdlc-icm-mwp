@@ -1,8 +1,8 @@
 # 0007 — Product-Level Decision Log
 
 - **Date:** 2026-07-09
-- **Status:** proposed
-- **Priority:** 1 of 6 — highest, because it's the same gap 0001–0006 already fixed for the framework itself, just missing one level down.
+- **Status:** adopted (2026-07-08)
+- **Priority:** 1 of 6 — highest, because it's the same gap 0001–0006 already fixed for the framework itself, just missing one level down. Ranked 17 of 20 by entry `0026`'s unified backlog re-prioritization.
 
 ## Problem
 
@@ -22,3 +22,14 @@ Add a blank, product-scoped decision-log template to `.mwp-templates/` (mirrorin
 ## What happens if adopted
 
 Every product built from this framework starts with the same discipline this framework used on itself — a running, append-only record of *why*, not just *what* — instead of leaving it as an opt-in suggestion that most teams under time pressure will skip.
+
+## Outcome (2026-07-08)
+
+All 4 steps executed:
+
+1. `.mwp-templates/PRODUCT_EVOLUTION_LOG_TEMPLATE.md` added — mirrors this repo's own `EVOLUTION_LOG.md` (Convention / Log table / "How to use this" / "Proposed → Adopted workflow" sections), reworded for product/architecture decisions instead of framework design. Starts with an empty log table and a header comment pointing back to why it exists.
+2. `README.md`'s "Using this framework for a new product" copy steps updated: new step 4 creates `docs/evolution/` and copies the template to `docs/evolution/EVOLUTION_LOG.md`. Subsequent steps renumbered (old 4/5/6 → 5/6/7) to keep the sequence readable.
+3. `docs/FAQ.md`'s "Which docs travel" entry updated: the "start a fresh one yourself" language replaced with "ships automatically, but starts empty" — also opportunistically added `docs/CONSTRAINTS.md` (landed via entry 0017, after this FAQ entry was last touched) to the "Travels" list and `docs/DEVELOPMENT.md` (entry 0020) to "Stays behind," since both were missing from that list regardless of this entry.
+4. Tested in a sandbox: ran the actual copy commands (`.mwp-templates` → local, `mkdir docs/evolution`, `cp .mwp-templates/PRODUCT_EVOLUTION_LOG_TEMPLATE.md → docs/evolution/EVOLUTION_LOG.md`) against a scratch directory. Generated file reads correctly end to end with zero data rows in the log table — confirmed no sandbox-mount staleness this time (`wc -l` and `tail` matched the real file exactly).
+
+Root `VERSION` bumped 13→14 — new `.mwp-templates/` file (`template-version: 1`) plus a `README.md` change to what ships to every new product.
