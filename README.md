@@ -21,6 +21,7 @@ The optional per-stage tools (Fabric, Graphify, Repomix, Mermaid CLI, DuckDB, Ob
 | `docs/CLAUDE_WORKFLOW_PLAYBOOK.md` | Optional — which Claude surface to use per stage, if you're using Claude. **Travels with new products.** |
 | `docs/PRIORITIZATION_GUIDE.md` | C-V-R scoring for product features. **Travels with new products.** |
 | `docs/TOOLING_MATRIX.md` | Free/open-source tool stack. **Travels with new products.** |
+| `docs/CONSTRAINTS.md` | Every framework-level non-negotiable in one place (scope containment, no auto-install, no alerting, escalation rules, etc.), each with a reason and a pointer to where it's actually enforced. **Travels with new products.** |
 | `docs/FAQ.md` | Answers to recurring meta-questions (is Claude required, can the framework develop itself, is that a PDLC, git/repo operational lessons). **Travels with new products.** |
 | `hooks/post-commit` | Sample git hook a product repo can adopt to auto-refresh Graphify/Repomix on relevant commits. |
 | `CLAUDE.md` | Root automation-routing rules Claude Code reads when working inside a product workspace built from this template. |
@@ -60,6 +61,7 @@ cp ../"PDLC - ICM-MWP"/docs/FAQ.md ./docs/
 cp ../"PDLC - ICM-MWP"/docs/CLAUDE_WORKFLOW_PLAYBOOK.md ./docs/
 cp ../"PDLC - ICM-MWP"/docs/PRIORITIZATION_GUIDE.md ./docs/
 cp ../"PDLC - ICM-MWP"/docs/TOOLING_MATRIX.md ./docs/
+cp ../"PDLC - ICM-MWP"/docs/CONSTRAINTS.md ./docs/
 # note: docs/evolution/ and PROJECT_PLAN.md stay behind — they're about this
 # framework template's own design history, not your product's. If you want to
 # track your own product/architecture decisions the same way, start a fresh

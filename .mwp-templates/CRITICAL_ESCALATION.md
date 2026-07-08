@@ -39,8 +39,8 @@ A human reviews `BLOCKED_REASON.md` in Obsidian, resolves the underlying issue (
 
 Every stage's `outputs/` also includes a self-reported `Context_Manifest.md` (every file the agent actually read, per that stage's `CONTEXT.md`). At the same Obsidian review gate as everything else, a human cross-checks the manifest against the contract's declared `READ ONLY` scope. Anything extra is a **flag, not an automatic block** — some extra reads may be legitimate and just under-declared in the contract; that's a human judgment call, not grounds for an automated stop.
 
-**This is not mechanical enforcement.** The manifest is self-reported by the agent, not traced at the OS/file-access level — an agent could in principle read outside scope and omit it from the manifest. This makes the framework's most load-bearing constraint (directory containment) *visible and auditable* rather than purely trust-based, but it is not a hard technical guarantee. If self-reporting proves unreliable in practice, the next step is actual file-access tracing (e.g. wrapping execution with `strace`/equivalent) — that's deliberately not built yet, as a future evolution entry only if a concrete need shows up. *(This note is the interim home for this disclosure; once `docs/CONSTRAINTS.md` exists — entry 0017 — it belongs there instead, alongside the framework's other non-negotiables.)*
+**This is not mechanical enforcement.** See `docs/CONSTRAINTS.md`'s "Scope & containment" section for the full disclosure (self-reporting limits, and what a stronger check would look like if this proves insufficient in practice).
 
 See `docs/evolution/0018-scope-containment-verification.md`.
 
-<!-- template-version: 3 -->
+<!-- template-version: 4 -->

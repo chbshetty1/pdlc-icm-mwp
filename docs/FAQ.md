@@ -1,6 +1,6 @@
 # FAQ
 
-Questions that came up while building and reasoning about this framework, kept here because the answers involve context that doesn't fit naturally into `README.md` or the other reference docs.
+Questions that came up while building and reasoning about this framework, kept here because the answers involve context that doesn't fit naturally into `README.md` or the other reference docs. For the framework's actual hard rules (what it will never do, and why) rather than the reasoning behind them, see `docs/CONSTRAINTS.md`.
 
 ## Do I have to use Claude specifically?
 
@@ -110,7 +110,7 @@ Partially, and it's getting consolidated. `EVOLUTION_LOG.md`'s "How to use this"
 
 ## Is there a single place that lists all of this framework's constraints?
 
-Not yet, but there should be — once entry `0017` is implemented, `docs/CONSTRAINTS.md` will consolidate every framework-level non-negotiable (directory containment, no auto-install, no configurable logging, no alerting) in one place with a pointer to where each is actually declared or enforced. Until then, they're spread across `IDENTITY.md`, `CLAUDE.md`, and individual evolution entries.
+Yes — `docs/CONSTRAINTS.md`, grouped into scope & containment, side-effects & escalation, and complexity & coordination. It consolidates every framework-level non-negotiable (directory containment, no auto-install, no configurable logging, no alerting, archive-not-delete escalations, generated files never hand-edited, advisory-only token guardrails) with a one-line reason and a pointer to where each is actually declared or enforced — previously spread across `IDENTITY.md`, `CLAUDE.md`, and individual evolution entries. It's a pure discoverability fix: no new enforcement, no behavior change. `.mwp-templates/CRITICAL_ESCALATION.md`'s Context Manifest disclosure (entry `0018`) moved into it too, per that entry's own note that `CRITICAL_ESCALATION.md` was only its interim home. See `docs/evolution/0017-consolidated-constraints-doc.md`.
 
 ## Are the framework's constraints actually enforced, or just stated as instructions?
 
