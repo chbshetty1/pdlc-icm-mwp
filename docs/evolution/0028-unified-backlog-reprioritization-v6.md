@@ -1,7 +1,7 @@
 # 0028 — Unified Backlog Re-Prioritization v6 (supersedes 0026)
 
 - **Date:** 2026-07-08
-- **Status:** proposed
+- **Status:** adopted (2026-07-09)
 - **Supersedes:** [0026](0026-unified-backlog-reprioritization-v5.md)
 
 ## What changed
@@ -36,6 +36,10 @@ No other reordering — there's nothing left to reorder among; 1–20 are all `a
 18. **0012** — Shared-learnings file *(adopted)*.
 19. **0006** — Test `--sprint` mode *(adopted)*.
 20. **0014** — Minimal operational log *(adopted)*.
-21. **0027** — `scaffold.sh --sprint` creates a dead-weight `FEATURE_META.md` *(new)*.
+21. **0027** — `scaffold.sh --sprint` creates a dead-weight `FEATURE_META.md` *(adopted)*.
 
 `0001` remains unranked (standing reference, not queued). With 1–20 adopted and 0027 now ranked, the entire backlog as of this pass has exactly one open item.
+
+## Outcome (2026-07-09)
+
+Entry 0027 was subsequently adopted at rank 21, as this entry proposed — resolution (a): `scaffold.sh` skips `FEATURE_META.md` creation for `--sprint` mode entirely rather than making `registry.sh` sprint-aware, per 0027's own Outcome. That closed out every ranked item (1–21); no further reordering has been needed since, since nothing has re-entered the backlog with a rank rather than being logged as its own standalone entry (0029 onward). This entry's `Status` was left at `proposed` after that happened — a pure bookkeeping gap, not a sign 0027 wasn't actually acted on — caught during a later documentation-consistency check and closed out here. No functional change; `EVOLUTION_LOG.md`'s row updated to match. No `VERSION` bump: this entry only reorders/documents the backlog itself, same as `0021`/`0022`/`0024`/`0026` before it, and `docs/evolution/` is framework-repo-only (doesn't travel to new products).
