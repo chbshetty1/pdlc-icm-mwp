@@ -111,3 +111,5 @@ The original design brainstorm flagged four production gaps; all four are implem
 v1 scaffold. Not yet pilot-tested end-to-end. Treat stage contracts and scripts as a strong starting point — expect to revise them after the first real feature runs through all 6 stages.
 
 A first-principles critique of this v1 design already exists at `docs/evolution/0001-first-principles-analysis.md` — it identifies concrete trigger conditions for when the fixed 6-stage/C-V-R model should be replaced with a more general decision-dependency graph. No action needed until one of those triggers actually shows up.
+
+A second, differently-shaped critique — an external critical-theory audit rather than internal first-principles analysis — exists at `docs/evolution/0042-critical-theory-audit.md`. Its core finding: nothing built or tested so far (203 passing script assertions included) actually validates the framework's real thesis, that folder-scoped context outperforms the alternatives — that claim stays untested until a real pilot runs. See that entry for its own trigger conditions.

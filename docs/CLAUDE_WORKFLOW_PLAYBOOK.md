@@ -1,6 +1,6 @@
 # Claude Workflow Playbook
 
-**Optional.** The framework's folder/`CONTEXT.md` mechanism is agent-agnostic — nothing here is required by the scripts or stage contracts. This is a reference workflow for teams using Claude specifically: how to run a single feature through all 6 stages using Claude Chat, Claude Cowork, and Claude Code CLI as specialized workers, keeping each bounded to its stage folder. Swap in a different agent and the rest of the framework works unchanged.
+**Optional.** The framework's folder/`CONTEXT.md` mechanism is agent-agnostic — nothing here is required by the scripts or stage contracts. This is a reference workflow for teams using Claude specifically: how to run a single feature through all 6 stages using Claude Chat, Claude Cowork, and Claude Code CLI as specialized workers, keeping each bounded to its stage folder. Swap in a different agent and the rest of the framework works unchanged. **The modality map below is a convenience default, not a requirement or an endorsement** — no script or `CONTEXT.md` contract checks which agent or surface you actually used, and nothing about this framework depends on Claude specifically (see `docs/CONSTRAINTS.md`'s "no proposal may hard-couple the framework to one vendor" rule and `docs/evolution/0042-critical-theory-audit.md`, which flagged this page's defaults as worth stating explicitly rather than leaving implicit).
 
 ## Modality map
 

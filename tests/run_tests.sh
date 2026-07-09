@@ -58,4 +58,9 @@ fi
 
 echo "----------------------------------------"
 echo "$TOTAL_RUN assertion(s) across $SUITES suite(s), $TOTAL_FAILED failed ($SUITES_FAILED suite(s) with failures)."
+# Scope note (entry 0042): this certifies scripts/*.sh behave as coded against
+# synthetic scratch data -- it is NOT evidence the framework's actual thesis
+# (folder-scoped context beats the alternatives for AI-agent output quality)
+# holds. That claim has no test here and stays open until a real pilot runs.
+# See docs/evolution/0042-critical-theory-audit.md.
 [ "$TOTAL_FAILED" -eq 0 ] && [ "$SUITES_FAILED" -eq 0 ]
