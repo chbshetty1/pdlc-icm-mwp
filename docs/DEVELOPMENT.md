@@ -43,6 +43,7 @@ If your change touches a behavior one of these suites already covers, run the re
 | `docs/FAQ.md` | Anyone with a "why does it work this way" question | Recurring meta-questions and operational lessons that don't fit neatly elsewhere. |
 | `docs/MIGRATIONS.md` | Anyone upgrading a product repo's copy of the framework | One row per MAJOR `VERSION` bump — what broke, what to do about it. See entry `0029`. |
 | `docs/evolution/` (this file's sibling, `EVOLUTION_LOG.md` + numbered entries) | Framework contributors | The append-only record of every design decision — what changed, why, and what it superseded. |
+| `docs/PILOT_MEASUREMENT_PLAN.md` | Whoever runs the first real end-to-end pilot | Tiered pilot metrics (free / small-addition / deferred), the counterfactual decision entry `0042`'s NA4 requires, and a pre-pilot TODO checklist. See entry `0043`. Framework-repo-only, does not travel — it's about validating this framework, not building a product. |
 | `docs/DEVELOPMENT.md` (this file) | Framework contributors | How to actually make a change — script conventions, doc map, adoption checklist, testing. |
 | `tests/` | Framework contributors | Dependency-free regression suite for `scripts/*.sh`. See entry `0030` and "Testing this framework" above. **Framework-repo only, does not travel.** |
 | `PROJECT_PLAN.md` | Framework contributors, historical reference | How this framework's original design decisions were made, pre-`docs/evolution/`. |
@@ -69,7 +70,7 @@ Applies to *every* adopted entry, not just entries specifically about documentat
 
 A living list of backlog entries that touch the same files, so they get planned around rather than each independently colliding. Revisited on every adoption per checklist step 7 above — entries move off this list once adopted and their collision is resolved.
 
-*As of 2026-07-09 (all 21 ranked backlog entries, 0001–0028, are resolved — adopted or superseded; entries 0029–0042 are additional, logged from external research, a stage-01/02 discovery pass, or a requested critical-lens review rather than the original ranked backlog; nothing is currently open):*
+*As of 2026-07-09 (all 21 ranked backlog entries, 0001–0028, are resolved — adopted or superseded; entries 0029–0043 are additional, logged from external research, a stage-01/02 discovery pass, or a requested critical-lens review rather than the original ranked backlog; nothing is currently open):*
 
 - Nothing outstanding. The next entry to touch `scripts/` should run `tests/run_tests.sh` first (entry 0030) to establish a known-good baseline before editing, in addition to reading each script's current state directly as every entry in this list already advises. Remember `0042`'s scope note when doing so: a clean run confirms the baseline's *scripts* behave correctly, not that the methodology itself is validated.
 
