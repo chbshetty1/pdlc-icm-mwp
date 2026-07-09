@@ -38,5 +38,23 @@ LAST_LINE3="$(tail -1 "$LOG")"
 assert_contains "$LAST_LINE3" "sync.sh" "log line names sync.sh"
 assert_not_contains "$LAST_LINE3" "exit=0" "sync.sh bad-usage call does NOT log exit=0"
 
+# --- Entry 0044 dry-run finding: exiting from INSIDE a function (not top-level
+# script flow) must not blank the logged args. usage() (scaffold.sh) and
+# check_secrets_guardrail() (sync.sh) are both called with no arguments of
+# their own, so bash's $* inside them refers to their own empty positional
+# parameters -- which used to leak into the EXIT trap and blank the real
+# invocation args on exactly these failure paths. ---
+bash scripts/scaffold.sh --feature >/dev/null 2>&1  # real arg present, but < 2 total -> usage()
+LAST_LINE4="$(tail -1 "$LOG")"
+assert_contains "$LAST_LINE4" "--feature" "scaffold.sh: real invocation arg survives an exit from inside usage() (entry 0044)"
+
+FEATURE="features/FEAT-777_secret_leak"
+bash scripts/scaffold.sh --feature FEAT-777_secret_leak >/dev/null 2>&1
+printf 'access_key = %s\n' "not-a-real-secret-1234567890" > "$FEATURE/01_discovery_ideation/outputs/Leak.md"
+bash scripts/sync.sh "$FEATURE" 01_discovery_ideation 02_definition_metrics "Tester" >/dev/null 2>&1
+LAST_LINE5="$(tail -1 "$LOG")"
+assert_contains "$LAST_LINE5" "$FEATURE" "sync.sh: real invocation args survive an exit from inside check_secrets_guardrail() (entry 0044)"
+assert_contains "$LAST_LINE5" "exit=1" "sync.sh: the secrets-block exit is still logged as a failure"
+
 echo "SUMMARY: $TESTS_RUN run, $TESTS_FAILED failed"
 exit "$TESTS_FAILED"

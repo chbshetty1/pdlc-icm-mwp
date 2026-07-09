@@ -19,15 +19,15 @@ Computable entirely from files the framework already writes. No script changes n
 | Escalation count and resolution time | How often the agent got stuck, and how long a human took to unblock it | `BLOCKED_REASON.md` creation timestamp → its move into `.escalations_archive/` |
 | Pivot vs. persevere outcome, and at which stage | Whether/where the riskiest assumption failed | `LESSONS_LEARNED.md` |
 
-### Tier 2 — needs a small, narrow, non-configurable addition (not yet built)
+### Tier 2 — needs a small, narrow, non-configurable addition
 
 Each of these is a single-purpose plain-text log or one-off script, matching the shape `SYNC_LOG.md`/`framework.log` already use — not a general metrics subsystem. See `docs/CONSTRAINTS.md`'s clarification (entry `0043`) for why this doesn't need to be treated as an exception to the anti-bloat rule.
 
-| Metric | What it measures | What's missing today |
+| Metric | What it measures | Status |
 |---|---|---|
-| Guardrail hit rate (token + secrets), real content | How often the token-ceiling warning and secrets block actually fire outside synthetic test fixtures, and the false-positive rate | `sync.sh` currently prints these to stdout only — nothing persists them. Needs one appended line per event, same shape as `SYNC_LOG.md` |
-| Context Manifest overreach rate | How often a stage's self-reported `Context_Manifest.md` lists files outside its `CONTEXT.md`'s declared `READ ONLY` scope | No script currently diffs the two — would need a small on-demand audit script, run manually at review time, not automatically |
-| Ceremony overhead ratio | Time spent on `CONTEXT.md` inputs, C-V-R scoring, and manifest review versus actual build time | Not derivable from any file — needs the human running the pilot to note a couple of timestamps manually; not worth automating for a single pilot |
+| Guardrail hit rate (token + secrets), real content | How often the token-ceiling warning and secrets block actually fire outside synthetic test fixtures, and the false-positive rate | **Built (entry 0044).** `sync.sh` appends one line per event to `<workspace>/GUARDRAIL_LOG.md`. |
+| Context Manifest overreach rate | How often a stage's self-reported `Context_Manifest.md` lists files outside its `CONTEXT.md`'s declared `READ ONLY` scope | **Built (entry 0044).** `scripts/audit_manifest.sh <workspace> [stage]` — on-demand, advisory only. |
+| Ceremony overhead ratio | Time spent on `CONTEXT.md` inputs, C-V-R scoring, and manifest review versus actual build time | Not derivable from any file — needs the human running the pilot to note a couple of timestamps manually; not worth automating for a single pilot. Still not built. |
 
 ### Tier 3 — explicitly out of scope for this pilot
 
@@ -40,7 +40,7 @@ Assumption NA4 (`0042`) requires comparing pilot results against *something*, or
 - **Estimate first:** before scaffolding the feature, write down a predicted lead time and rough token/context cost for building it *without* the framework — even a rough gut number is better than nothing, since it can't be reconstructed honestly after the fact.
 - **Parallel run:** build one comparable, low-stakes feature the same size without the framework (or with a different orchestration approach), and compare directly. More rigorous, more expensive — worth it only if the first pilot feature is a good match for a fair comparison.
 
-Whichever is chosen, write it down in the pilot's own product repo before `scaffold.sh` runs — this can't be done retroactively.
+**Decided (2026-07-09): estimate first.** Whoever runs the pilot writes the predicted lead time and rough token/context cost down in that pilot's own product repo before `scaffold.sh` runs — not done here, since no product data belongs in this repo. This can't be done retroactively, so it's the first thing to do once a real pilot feature is chosen.
 
 ## Where the actual data lives
 
@@ -48,12 +48,14 @@ This file is guidance, not a data store. The pilot's own product repo should rec
 
 ## TODO — before the pilot starts
 
-- [ ] Decide the counterfactual approach (estimate vs. parallel run) and write it down in the pilot's product repo.
-- [ ] Spot-check that `SYNC_LOG.md`/`framework.log` timestamp granularity is actually sufficient for lead-time computation (confirm, don't assume).
-- [ ] Build: persistent logging for guardrail warn/block events in `sync.sh` (currently stdout-only) — a small, narrow addition, not yet built.
-- [ ] Build: on-demand Context-Manifest-overreach audit script — not yet built.
-- [ ] Decide where in the pilot's product repo the Tier 1/2 results actually get recorded (`PILOT_METRICS.md` vs. folded into that repo's evolution log).
+- [x] Decide the counterfactual approach — **estimate first** (2026-07-09). Still needs to be actually written down in the pilot's own product repo once that repo exists — that part can't be done here.
+- [x] Spot-check that `SYNC_LOG.md`/`framework.log` timestamp granularity is actually sufficient for lead-time computation (entry 0044's dry run). `SYNC_LOG.md`/`GUARDRAIL_LOG.md` are minute-granularity, `framework.log` is second-granularity — sufficient for realistic pilot timescales (hours/days between stage transitions); line order still preserves sequence for same-minute ties in a fast synthetic test.
+- [x] Build: persistent logging for guardrail warn/block events in `sync.sh` — done, entry 0044. `<workspace>/GUARDRAIL_LOG.md`.
+- [x] Build: on-demand Context-Manifest-overreach audit script — done, entry 0044. `scripts/audit_manifest.sh`.
+- [ ] Decide where in the pilot's product repo the Tier 1/2 results actually get recorded (`PILOT_METRICS.md` vs. folded into that repo's evolution log). Still open — depends on that repo existing.
 - [ ] Once the pilot generates real data, revisit `0001`'s trigger conditions (not just `0042`'s) against what actually happened — this plan measures the framework's efficacy, not its theoretical correctness, and the two entries govern different questions.
+
+A dry run (entry 0044) exercised the full Tier 1 + Tier 2 setup against a synthetic feature before any of this is trusted on the real pilot, and found one real bug along the way (a logging gap in `sync.sh`/`scaffold.sh` predating this plan, now fixed) — see that entry for the full account. Only the counterfactual write-up and the results-location decision remain, and both are blocked on the pilot's product repo actually existing, not on anything left to build here.
 
 ## Relationship to the anti-bloat constraint
 

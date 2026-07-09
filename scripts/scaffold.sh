@@ -8,9 +8,17 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 TEMPLATES_DIR="$ROOT_DIR/.mwp-templates"
 
+# Captured before any function is defined/called (entry 0044 dry-run finding):
+# "$*" inside the EXIT trap below would otherwise reflect whichever function's
+# own (possibly empty) positional parameters happen to be in scope at exit
+# time -- e.g. usage() below is called with no arguments, so exiting from
+# inside it silently blanks framework.log's args field on exactly the
+# bad-usage failure path where the args would matter most.
+SCRIPT_ARGS="$*"
+
 # shellcheck source=lib/log.sh
 source "$SCRIPT_DIR/lib/log.sh"
-trap 'LOG_EXIT_CODE=$?; log_invocation "$ROOT_DIR" "$(basename "$0")" "$*" "$LOG_EXIT_CODE"' EXIT
+trap 'LOG_EXIT_CODE=$?; log_invocation "$ROOT_DIR" "$(basename "$0")" "$SCRIPT_ARGS" "$LOG_EXIT_CODE"' EXIT
 
 if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
   echo "Usage: $0 --feature <FEAT-xxx_name> | --sprint <SPRINT-xx_name>"

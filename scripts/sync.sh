@@ -7,9 +7,18 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
+# Captured before any function is defined/called (entry 0044 dry-run finding):
+# "$*" inside the EXIT trap below would otherwise reflect whichever function's
+# own (possibly empty) positional parameters happen to be in scope at exit
+# time -- check_secrets_guardrail() below is called with no arguments, so a
+# secrets-block exit from inside it silently blanked framework.log's args
+# field, discovered via a real GUARDRAIL_LOG.md/framework.log cross-check
+# during docs/PILOT_MEASUREMENT_PLAN.md's dry run, not by any prior test.
+SCRIPT_ARGS="$*"
+
 # shellcheck source=lib/log.sh
 source "$SCRIPT_DIR/lib/log.sh"
-trap 'LOG_EXIT_CODE=$?; log_invocation "$ROOT_DIR" "$(basename "$0")" "$*" "$LOG_EXIT_CODE"' EXIT
+trap 'LOG_EXIT_CODE=$?; log_invocation "$ROOT_DIR" "$(basename "$0")" "$SCRIPT_ARGS" "$LOG_EXIT_CODE"' EXIT
 
 if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
   echo "Usage: $0 <workspace_path> <from_stage> <to_stage> [approver]"
@@ -41,6 +50,24 @@ if [ -f "$FROM_OUT/BLOCKED_REASON.md" ]; then
   echo "Error: $FROM/outputs contains an unresolved BLOCKED_REASON.md. Resolve it before syncing forward." >&2
   exit 1
 fi
+
+# --- Guardrail event log (entry 0044) ---
+# Tier 2 of docs/PILOT_MEASUREMENT_PLAN.md: the guardrail checks below have
+# always printed to stdout/stderr, but nothing persisted *how often* they
+# actually fire on real content -- only on the synthetic fixtures tests/
+# uses. This appends one line per guardrail event (warn or block) to
+# <workspace>/GUARDRAIL_LOG.md, same shape as SYNC_LOG.md (entry 0009):
+# plain, append-only, non-configurable, no levels. Never fails the calling
+# check over a logging problem, same convention as lib/log.sh's
+# log_invocation.
+log_guardrail_event() {
+  local kind="$1" detail="$2"
+  local guardrail_log="$WORKSPACE/GUARDRAIL_LOG.md"
+  if [ ! -f "$guardrail_log" ]; then
+    { echo "# Guardrail Log — $(basename "$WORKSPACE")"; echo ""; } > "$guardrail_log" 2>/dev/null || return 0
+  fi
+  printf '%s — %s — %s — %s\n' "$(date '+%Y-%m-%d %H:%M')" "$FROM" "$kind" "$detail" >> "$guardrail_log" 2>/dev/null || true
+}
 
 # --- Secrets/credential guardrail (entry 0034) ---
 # Mechanical, regex-based scan of this stage's outputs/ before it syncs
@@ -108,6 +135,7 @@ Whether the flagged content is a real credential (rotate/revoke it immediately i
 ## Suggested next step
 Review the flagged file(s) above. If real, rotate the credential and remove it from the output file before retrying. If a false positive, edit the file so it no longer matches (e.g. use an obvious placeholder like {{API_KEY}} instead of a real-looking string), then re-run sync.sh.
 EOF
+    log_guardrail_event "secrets-block" "${#hits[@]} hit(s), see $FROM_OUT/BLOCKED_REASON.md"
     echo "Error: possible hardcoded credential detected — see $FROM_OUT/BLOCKED_REASON.md" >&2
     exit 1
   fi
@@ -135,6 +163,7 @@ check_token_guardrail() {
     est=$(awk -v w="$words" 'BEGIN { printf "%d", w * 1.3 }')
     if [ "$est" -gt "$ceiling" ]; then
       echo "Warning: $(basename "$f") is ~$est estimated tokens (word-count heuristic), over $FROM's declared ceiling of $ceiling. Sync continues — see docs/evolution/0004-enforce-token-guardrails.md." >&2
+      log_guardrail_event "token-warn" "$(basename "$f") ~${est}est/${ceiling}ceiling"
     fi
   done
 }
