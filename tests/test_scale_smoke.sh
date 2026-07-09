@@ -9,6 +9,11 @@
 # correctly-bucketed, correctly-sorted output -- and finish in reasonable
 # time, as a smoke test rather than a strict timed benchmark (this sandbox's
 # performance isn't a stable baseline to assert a tight threshold against).
+# Ceiling is 90s, not 30s (entry 0045): the original 30s threshold was tuned
+# against this framework's Linux dev sandbox and failed a real run on Windows
+# (Git Bash), which forks much more slowly for the same 60-features-worth of
+# mkdir/awk/cat-heredoc calls -- 32s elapsed, an environment-speed difference,
+# not a scaling regression in either script.
 #
 # The R=0 features were originally added to exercise registry.sh's awk
 # divide-by-zero guard (R=0 would otherwise crash the (C*V)/R score
@@ -140,8 +145,8 @@ assert_file_exists "$REG_FILE" "FEATURE_PRIORITY_REGISTRY.md was generated"
 TOTAL_ROWS="$(grep -cE '^\| FEAT-' "$REG_FILE")"
 assert_equal "$N" "$TOTAL_ROWS" "registry has exactly $N feature rows total across all sections"
 
-if [ "$REG_ELAPSED" -lt 30 ]; then R=0; else R=1; fi
-assert_equal "0" "$R" "registry.sh finished in under 30s against $N features (took ${REG_ELAPSED}s) -- smoke check, not a strict benchmark"
+if [ "$REG_ELAPSED" -lt 90 ]; then R=0; else R=1; fi
+assert_equal "0" "$R" "registry.sh finished in under 90s against $N features (took ${REG_ELAPSED}s) -- smoke check, not a strict benchmark"
 
 # --- Sort-order spot check: the highest-scored active feature must be the
 # first data row under the Active execution queue heading, and likewise for
@@ -184,8 +189,8 @@ STATUS_ELAPSED=$((END - START))
 
 assert_equal "0" "$STATUS_EC" "status.sh exits 0 against $N features + 8 sprints"
 
-if [ "$STATUS_ELAPSED" -lt 30 ]; then R=0; else R=1; fi
-assert_equal "0" "$R" "status.sh finished in under 30s (took ${STATUS_ELAPSED}s) -- smoke check, not a strict benchmark"
+if [ "$STATUS_ELAPSED" -lt 90 ]; then R=0; else R=1; fi
+assert_equal "0" "$R" "status.sh finished in under 90s (took ${STATUS_ELAPSED}s) -- smoke check, not a strict benchmark"
 
 FEATURE_ROWS_IN_STATUS="$(printf '%s\n' "$STATUS_OUT" | grep -cE '^FEAT-')"
 assert_equal "$N" "$FEATURE_ROWS_IN_STATUS" "status.sh lists all $N features individually"

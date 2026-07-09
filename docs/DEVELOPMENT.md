@@ -70,7 +70,7 @@ Applies to *every* adopted entry, not just entries specifically about documentat
 
 A living list of backlog entries that touch the same files, so they get planned around rather than each independently colliding. Revisited on every adoption per checklist step 7 above — entries move off this list once adopted and their collision is resolved.
 
-*As of 2026-07-09 (all 21 ranked backlog entries, 0001–0028, are resolved — adopted or superseded; entries 0029–0044 are additional, logged from external research, a stage-01/02 discovery pass, or a requested critical-lens review rather than the original ranked backlog; nothing is currently open):*
+*As of 2026-07-09 (all 21 ranked backlog entries, 0001–0028, are resolved — adopted or superseded; entries 0029–0045 are additional, logged from external research, a stage-01/02 discovery pass, a requested critical-lens review, or a real test failure on the user's own machine rather than the original ranked backlog; nothing is currently open):*
 
 - Nothing outstanding. The next entry to touch `scripts/` should run `tests/run_tests.sh` first (entry 0030) to establish a known-good baseline before editing, in addition to reading each script's current state directly as every entry in this list already advises. Remember `0042`'s scope note when doing so: a clean run confirms the baseline's *scripts* behave correctly, not that the methodology itself is validated.
 
