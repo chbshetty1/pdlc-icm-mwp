@@ -19,3 +19,7 @@ Two-line threshold edit (`-lt 30` → `-lt 90`, both occurrences) plus a comment
 ## Outcome (2026-07-09)
 
 Not independently re-verified end-to-end in this session (no sandbox rebuild performed for this fix) — the user's original failure was a clean single-assertion miss (`expected [0], got [1]` on the 30s check only, nothing else in the suite reported failing), and the fix is a direct threshold change addressing exactly that. Worth a `tests/run_tests.sh` run on the user's own machine to confirm before treating this as closed.
+
+## Verification (2026-07-10)
+
+Ran the full suite in the sandbox: 225/225 assertions, 71/71 checks, 0 failures across 14 suites. `test_scale_smoke.sh` specifically: `registry.sh` finished in 2s, `status.sh` in 1s (well under the new 90s ceiling) — confirms the threshold edit didn't break the smoke test's own logic. This sandbox is Linux, not the user's Windows/Git Bash machine where the original 32s timing was observed, so it doesn't reproduce the original slow-hardware condition — a run on the user's own machine is still the authoritative close-out, but nothing here contradicts the fix. Treating as closed pending that.
