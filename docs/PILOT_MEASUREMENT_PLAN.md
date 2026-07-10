@@ -18,6 +18,7 @@ Computable entirely from files the framework already writes. No script changes n
 | Sync retry/friction count per transition | How often a stage transition needed more than one attempt | `.mwp/framework.log` (one line per invocation, with exit code) |
 | Escalation count and resolution time | How often the agent got stuck, and how long a human took to unblock it | `BLOCKED_REASON.md` creation timestamp → its move into `.escalations_archive/` |
 | Pivot vs. persevere outcome, and at which stage | Whether/where the riskiest assumption failed | `LESSONS_LEARNED.md` |
+| Stage turnaround time, commit-to-commit | Per-stage speed, not just end-to-end pipeline lead time — where the pipeline is actually slow | `SYNC_LOG.md` timestamps between successive transitions for the same feature (added entry `0046`) |
 
 ### Tier 2 — needs a small, narrow, non-configurable addition
 
@@ -44,7 +45,7 @@ Assumption NA4 (`0042`) requires comparing pilot results against *something*, or
 
 ## Where the actual data lives
 
-This file is guidance, not a data store. The pilot's own product repo should record results — either a dedicated `PILOT_METRICS.md` at that repo's root, or folded into that product's own `docs/evolution/EVOLUTION_LOG.md` as part of whatever entry documents the pilot's outcome. Either is fine; what matters is writing it down somewhere durable in that repo, not leaving it to be reconstructed from memory afterward.
+This file is guidance, not a data store. **Decided (2026-07-10, entry `0046`): `PILOT_METRICS.md` at the pilot repo's root** — not folded into that product's `docs/evolution/EVOLUTION_LOG.md`, so the numbers are findable without reading entry-by-entry. What matters is writing it down somewhere durable in that repo, not leaving it to be reconstructed from memory afterward; this file still doesn't create it, since that's blocked on the pilot repo existing.
 
 ## TODO — before the pilot starts
 
@@ -52,10 +53,10 @@ This file is guidance, not a data store. The pilot's own product repo should rec
 - [x] Spot-check that `SYNC_LOG.md`/`framework.log` timestamp granularity is actually sufficient for lead-time computation (entry 0044's dry run). `SYNC_LOG.md`/`GUARDRAIL_LOG.md` are minute-granularity, `framework.log` is second-granularity — sufficient for realistic pilot timescales (hours/days between stage transitions); line order still preserves sequence for same-minute ties in a fast synthetic test.
 - [x] Build: persistent logging for guardrail warn/block events in `sync.sh` — done, entry 0044. `<workspace>/GUARDRAIL_LOG.md`.
 - [x] Build: on-demand Context-Manifest-overreach audit script — done, entry 0044. `scripts/audit_manifest.sh`.
-- [ ] Decide where in the pilot's product repo the Tier 1/2 results actually get recorded (`PILOT_METRICS.md` vs. folded into that repo's evolution log). Still open — depends on that repo existing.
+- [x] Decide where in the pilot's product repo the Tier 1/2 results actually get recorded — **`PILOT_METRICS.md` at that repo's root** (entry `0046`, 2026-07-10). Still needs to actually be created once that repo exists — that part can't be done here.
 - [ ] Once the pilot generates real data, revisit `0001`'s trigger conditions (not just `0042`'s) against what actually happened — this plan measures the framework's efficacy, not its theoretical correctness, and the two entries govern different questions.
 
-A dry run (entry 0044) exercised the full Tier 1 + Tier 2 setup against a synthetic feature before any of this is trusted on the real pilot, and found one real bug along the way (a logging gap in `sync.sh`/`scaffold.sh` predating this plan, now fixed) — see that entry for the full account. Only the counterfactual write-up and the results-location decision remain, and both are blocked on the pilot's product repo actually existing, not on anything left to build here.
+A dry run (entry 0044) exercised the full Tier 1 + Tier 2 setup against a synthetic feature before any of this is trusted on the real pilot, and found one real bug along the way (a logging gap in `sync.sh`/`scaffold.sh` predating this plan, now fixed) — see that entry for the full account. Only the counterfactual write-up remains, and it's blocked on the pilot's product repo actually existing, not on anything left to build here.
 
 ## Relationship to the anti-bloat constraint
 

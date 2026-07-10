@@ -24,3 +24,20 @@ $currentUserPath = [Environment]::GetEnvironmentVariable("PATH", "User")
 ```
 
 Open a new terminal afterward — this doesn't affect the current session. Worth checking for any other tool in this table installed via `winget`, not just Fabric.
+
+## Claude Skills mapping (output-format packaging)
+
+Distinct from the tool table above, and distinct from `CLAUDE.md`'s "Automated skill routing" section — both of those are about CLI tools (Fabric, Graphify, Repomix, DuckDB) that transform or compress text before it enters context. This section is about Claude's Skills (reusable `SKILL.md` packages — docx, pptx, xlsx, pdf, etc.) available in Claude surfaces like Cowork: which stage output artifact is worth turning into a polished, non-markdown deliverable, and with which skill, if a real deliverable is actually needed.
+
+| Stage | Output artifact | Skill | When to use it |
+|---|---|---|---|
+| 02_definition_metrics | `Core_Metrics_KPIs.md` | xlsx | A stakeholder wants a computable KPI tracker, not a static table. |
+| 03_requirements_specs / 04_architecture_design | `BDD_Gherkin_Specs.md`, `System_Architecture.md` | docx | The spec or architecture doc needs to leave the workspace as a reviewable Word file — e.g. for a non-technical stakeholder. |
+| 04_architecture_design | `System_Architecture.md` and its diagrams | pptx | Architecture needs to be presented, not just read — on top of, not instead of, the Mermaid diagrams `CLAUDE.md` already requires. |
+| 06_validation_gtm | `Validation_Report.md` | pdf or docx | The final pilot/validation report needs to leave the workspace as a shareable, fixed-layout document. |
+
+Notes:
+
+- Applies only when a stage's output needs to leave the workspace as a polished deliverable. The working artifact inside a stage's own `outputs/` stays plain markdown, same as everywhere else in this framework — cheapest thing satisfying "human-readable" and "machine-parseable" at once, per `docs/evolution/0001-first-principles-analysis.md`.
+- Optional, same status as the rest of this file's tool stack — no `CONTEXT.md` contract requires it, and no script checks whether it was used.
+- A human requests the polished deliverable at the point they need it; this is a mapping of which skill fits which artifact, not a new automated step in `sync.sh` or `scaffold.sh`. See `docs/evolution/0046-agent-primitives-audit.md`.
