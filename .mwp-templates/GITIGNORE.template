@@ -1,0 +1,34 @@
+# .gitignore for a product repo built from the PDLC-ICM-MWP framework.
+#
+# This is intentionally NOT a copy of the framework repo's own .gitignore --
+# that one ignores features/, sprints/, and .mwp/GLOBAL_CONTEXT.md, because
+# the framework repo must never accumulate live product data (see
+# PROJECT_PLAN.md's repo-split decision). In a product repo, those are
+# exactly the things you want tracked: features/ is your actual development
+# history, GLOBAL_CONTEXT.md is your real product config, and
+# .escalations_archive/ is deliberately meant to be a durable, committed
+# record (see docs/CONSTRAINTS.md's "archive, don't delete" rule). Don't
+# add any of those here.
+#
+# See docs/evolution/0048-product-gitignore-and-windows-first-run-gaps.md.
+
+# Framework operational log -- local record, not a design artifact.
+.mwp/framework.log
+
+# Generated context-bundling output (regenerable via repomix/graphify)
+*.repomix-output.*
+graphify-out/
+
+# OS/editor noise
+.DS_Store
+
+# Personal Obsidian vault config, if this repo doubles as one
+.obsidian/
+
+# --- Add your product's own stack-specific ignores below ---
+# This framework is deliberately tech-stack-agnostic (see docs/CONSTRAINTS.md's
+# anti-lock-in rule), so nothing stack-specific is pre-filled here. Common
+# examples: node_modules/, __pycache__/, *.pyc, .venv/, .env, build/, dist/,
+# or a generated local database/vector store your product creates at runtime.
+
+# template-version: 1

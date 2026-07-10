@@ -12,11 +12,17 @@ On Windows, if you're not sure whether Git Bash or WSL is even installed, run `.
 
 The optional per-stage tools (Fabric, Graphify, Repomix, Mermaid CLI, DuckDB, Obsidian) are a separate set of prerequisites with their own install steps — see `docs/TOOLING_MATRIX.md` (includes a Windows `winget` PATH gotcha found while verifying this). Verification status: `docs/evolution/0013-verify-tooling-matrix.md`.
 
+**Three first-run gotchas found actually using this on a real Windows machine, not just verifying it in a sandbox (entry `0048`):**
+
+1. bash never treats `\` as a path separator — only `/`, on Windows or anywhere else. A path like `..\..\some folder\script.sh` passed to bash is treated as one literal filename containing backslash characters, not nested directories, and fails with a confusing "No such file or directory" even though the file genuinely exists. Use forward slashes in any path you hand to bash, regardless of what you're used to typing in Windows Explorer or PowerShell.
+2. More than one program can answer to `bash` on a Windows PATH — Git Bash's own `bash.exe` and WSL's are both real possibilities, and they resolve the same drive differently (Git Bash: `/d/Projects/...`; WSL: `/mnt/d/Projects/...`). This repo's own verification (entry `0002`) was against Git Bash specifically — if something behaves unexpectedly, run `which bash` to confirm which one actually ran, or open an actual Git Bash terminal window rather than invoking `bash` as a one-off command from inside PowerShell.
+3. A brand-new machine's first `git commit` anywhere fails with `Author identity unknown` until `git config --global user.name`/`user.email` are set once. Nothing specific to this framework, but easy to hit for the first time exactly when scaffolding a first product repo.
+
 ## What's in here
 
 | Path | Purpose |
 |---|---|
-| `.mwp-templates/` | Blueprint files copied into every new product workspace: global identity, stage contracts (6 PDLC stages), escalation template, feature-metadata template, lessons-learned register template, and a reference copy of the generated priority-registry format. |
+| `.mwp-templates/` | Blueprint files copied into every new product workspace: global identity, stage contracts (6 PDLC stages), escalation template, feature-metadata template, lessons-learned register template, a product-repo `.gitignore` template (see entry `0048` — deliberately not a copy of this repo's own `.gitignore`), and a reference copy of the generated priority-registry format. |
 | `scripts/` | Automation: `scaffold.sh` (spin up a new feature/sprint workspace — features also get a `FEATURE_META.md` for C-V-R scoring; sprints don't, since they aren't a single scored hypothesis the way a feature is), `sync.sh` (advance approved outputs to the next stage — warns on token-guardrail overruns, blocks and auto-escalates on a shared-path collision or a detected hardcoded credential (both now also logged to `GUARDRAIL_LOG.md`, see entry 0044), folds each stage's `Learnings_Note.md` into `LEARNINGS.md`, logs an optional `[approver]` to `SYNC_LOG.md`), `pivot.sh` (Lean kill-switch — also distills a summary row into `LESSONS_LEARNED.md` and folds stage 06's `Learnings_Note.md` into `LEARNINGS.md` before purging a killed feature), `compact.sh` (context compaction), `doctor.sh` (check, and optionally install, the tool stack in `docs/TOOLING_MATRIX.md`), `registry.sh` (regenerate `.mwp/FEATURE_PRIORITY_REGISTRY.md` from every feature's `FEATURE_META.md` — never hand-edit the registry), `status.sh` (on-demand per-feature + stage-level rollup of what's blocked or in-progress, no alerting), `audit_manifest.sh` (on-demand: flags a stage's self-reported `Context_Manifest.md` reads not covered by its `CONTEXT.md`'s declared scope — advisory only, mechanizes entry 0018's existing human cross-check, see entry 0044), `lib/scan_features.sh` (shared `features/*/`/`sprints/*/` scan helper used by `registry.sh` and `status.sh`), `lib/stages.sh` (single source for the 6 stage names, used by `scaffold.sh` and `status.sh`), `lib/log.sh` (shared operational-log helper — every script above appends one line per invocation to `.mwp/framework.log` via a `trap ... EXIT`, no levels, no per-stage config). All 8 top-level scripts respond to `-h`/`--help`. |
 | `docs/CLAUDE_WORKFLOW_PLAYBOOK.md` | Optional — which Claude surface to use per stage, if you're using Claude. **Travels with new products.** |
 | `docs/PRIORITIZATION_GUIDE.md` | C-V-R scoring for product features. **Travels with new products.** |
@@ -66,7 +72,15 @@ cp ../"PDLC - ICM-MWP"/VERSION ./VERSION
 # breaking change gets a row there (see docs/evolution/0015-framework-and-template-versioning.md
 # for why versioning exists at all).
 
-# 3. Copy the reference docs a product team actually needs day-to-day
+# 3. Set up this product's own .gitignore -- NOT a copy of the framework
+# repo's own .gitignore (that one deliberately ignores features/, sprints/,
+# and .mwp/GLOBAL_CONTEXT.md, which is correct only because the framework
+# repo must never accumulate live product data -- a product repo needs
+# exactly those tracked). Do this before your first commit, not after.
+# See docs/evolution/0048-product-gitignore-and-windows-first-run-gaps.md.
+cp .mwp-templates/GITIGNORE.template ./.gitignore
+
+# 4. Copy the reference docs a product team actually needs day-to-day
 mkdir -p ./docs
 cp ../"PDLC - ICM-MWP"/docs/FAQ.md ./docs/
 cp ../"PDLC - ICM-MWP"/docs/CLAUDE_WORKFLOW_PLAYBOOK.md ./docs/
@@ -75,26 +89,26 @@ cp ../"PDLC - ICM-MWP"/docs/TOOLING_MATRIX.md ./docs/
 cp ../"PDLC - ICM-MWP"/docs/CONSTRAINTS.md ./docs/
 cp ../"PDLC - ICM-MWP"/docs/MIGRATIONS.md ./docs/
 
-# 4. Set up this product's own evolution log (its architecture/decision
+# 5. Set up this product's own evolution log (its architecture/decision
 # history — separate from the framework's own docs/evolution/, which stays
 # behind and does not copy over). Starts empty; only the convention travels,
 # not the framework's specific entries.
 mkdir -p ./docs/evolution
 cp .mwp-templates/PRODUCT_EVOLUTION_LOG_TEMPLATE.md ./docs/evolution/EVOLUTION_LOG.md
 
-# 5. Write your product's global context, and set up the incidental-
+# 6. Write your product's global context, and set up the incidental-
 # learnings register alongside it (append-only, distinct from
 # GLOBAL_CONTEXT.md's deliberate constraints — see LEARNINGS.md's own header)
 cp .mwp-templates/GLOBAL_CONTEXT.template.md .mwp/GLOBAL_CONTEXT.md
 cp .mwp-templates/LEARNINGS.template.md ./LEARNINGS.md
 # edit .mwp/GLOBAL_CONTEXT.md with your real stack, product name, constraints
 
-# 6. Set up the lessons-learned register (pivot.sh will also self-create this
+# 7. Set up the lessons-learned register (pivot.sh will also self-create this
 # on the first --pivot if you skip this step, but copying it now keeps its
 # header/instructions intact from the start)
 cp .mwp-templates/LESSONS_LEARNED.template.md ./LESSONS_LEARNED.md
 
-# 7. Spin up your first feature (always a Core Data Anchor first)
+# 8. Spin up your first feature (always a Core Data Anchor first)
 bash scripts/scaffold.sh --feature FEAT-001_core_architecture_and_schema
 ```
 
